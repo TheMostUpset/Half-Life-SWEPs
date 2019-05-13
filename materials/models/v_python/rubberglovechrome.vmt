@@ -1,0 +1,17 @@
+"VertexLitGeneric"
+{
+	"$color2" "[.06 .06 .06]"
+	"$envmap" "models/hl1_fixedenv/rubberglovechrome"
+	"$envmapsphere"	1
+	"$envmapmode" 1
+
+	// requred to see specular on dx6+7 at all
+	"$multipass" 1
+	
+	"VertexLitGeneric_HDR_DX9"
+	{
+		"$envmaptint" "[.15 .15 .15]"
+		"$envmapcontrast" .8
+		"$envmapsaturation" 1.5
+	}
+}

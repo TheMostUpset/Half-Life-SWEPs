@@ -1,0 +1,17 @@
+"VertexLitGeneric"
+{
+	"$color2" "[.7 .4 .15]"
+	"$envmap" "models/hl1_fixedenv/w_pythonammo/bulletchrome"
+	"$envmapsphere" 1
+	"$envmapmode" 1
+
+	// requred to see specular on dx6+7 at all
+	"$multipass" 1
+	
+	"VertexLitGeneric_HDR_DX9"
+	{
+		"$envmaptint" "[.2 .2 .2]"
+		"$envmapcontrast" .5
+		"$envmapsaturation" 1.5
+	}
+}

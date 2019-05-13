@@ -1,0 +1,17 @@
+"VertexLitGeneric"
+{
+	"$color2" "[.5 .2 .1]"
+	"$envmap" "models/hl1_fixedenv/v_gauss/barrelCHROME"
+	"$envmapsphere" 1
+	"$envmapmode" 1
+
+	// requred to see specular on dx6+7 at all
+	"$multipass" 1
+	
+	"VertexLitGeneric_HDR_DX9"
+	{
+		"$envmaptint" "[.2 .19 .15]"
+		"$envmapcontrast" .75
+		"$envmapsaturation" 1.25
+	}
+}
