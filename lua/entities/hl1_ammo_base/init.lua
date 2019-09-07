@@ -2,6 +2,10 @@ AddCSLuaFile("shared.lua")
 include('shared.lua')
 
 function ENT:Pickup(ent)
+	if hook.Run("PlayerCanPickupItem", ent, self) == false then
+		return
+	end
+
 	local cvar = cvars.Bool("hl1_sv_clampammo")
 	local ammoCount = ent:GetAmmoCount(self.AmmoType)
 	if cvar and ammoCount >= self.MaxAmmo then return end

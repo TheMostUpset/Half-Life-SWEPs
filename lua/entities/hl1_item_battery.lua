@@ -10,6 +10,10 @@ ENT.Spawnable = true
 ENT.Model = "models/w_battery.mdl"
 
 function ENT:Pickup(ply)
+	if hook.Run("PlayerCanPickupItem", ply, self) == false then
+		return
+	end
+
 	if !ply:IsSuitEquipped() then return end
 	local armor = ply:Armor()
 	local maxarmor = 100

@@ -10,6 +10,10 @@ ENT.Spawnable = true
 ENT.Model = "models/w_medkit.mdl"
 
 function ENT:Pickup(ply)
+	if hook.Run("PlayerCanPickupItem", ply, self) == false then
+		return
+	end
+
 	local hp = ply:Health()
 	local maxhp = ply:GetMaxHealth()
 	if hp >= maxhp then return end
