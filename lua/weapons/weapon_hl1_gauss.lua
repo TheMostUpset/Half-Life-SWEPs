@@ -346,7 +346,7 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 
 	self:SendRecoil()	
 	
-	while flDamage > 10 && nMaxHits > 0 do
+	while flDamage > 10 && nMaxHits > 0 && IsValid(self:GetOwner()) do
 		nMaxHits = nMaxHits - 1
 		
 		if SERVER then self.Owner:LagCompensation(true) end
@@ -526,6 +526,8 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 							--self:InsertSound(1, self:GetPos(), 1024, 3)
 							
 							vecSrc = exit_tr.HitPos + vecDir
+						else
+							break
 						end
 					else
 						flDamage = 0
