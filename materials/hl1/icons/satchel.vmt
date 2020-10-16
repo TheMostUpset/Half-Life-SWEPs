@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "hl1/icons/satchel"
+	"$vertexalpha" "1"
+	"$vertexcolor" "1"
+	"$additive" 1
+}

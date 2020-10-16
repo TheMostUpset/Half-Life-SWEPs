@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "sprites/laserdot"
+	"$vertexalpha" 1
+	"$additive" 1
+	"$color" "[2 2 2]"
+	//"$ignorez" 1
+}

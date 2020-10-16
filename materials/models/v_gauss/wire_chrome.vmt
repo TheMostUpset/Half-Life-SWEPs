@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$color2" "[.09 .07 .13]"
+	"$envmap" "models/hl1_fixedenv/v_gauss/wire_chrome"
+	"$multipass" 1
+}
