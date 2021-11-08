@@ -8,18 +8,20 @@ ENT.Author = "Upset"
 ENT.Spawnable = true
 
 ENT.Model = "models/w_medkit.mdl"
+ENT.PickupSound = "items/smallmedkit1.wav"
+ENT.PickupMsgClass = "item_healthkit"
 
 function ENT:Pickup(ply)
 	local hp = ply:Health()
 	local maxhp = ply:GetMaxHealth()
 	if hp >= maxhp then return end
 	ply:SetHealth(math.min(hp + GetConVarNumber("sk_healthkit"), maxhp))
-	ply:EmitSound("items/smallmedkit1.wav", 85)
+	ply:EmitSound(self.PickupSound, 85)
 	if self:ItemShouldRespawn() then
 		self:RespawnItem()
 	else
 		self:Remove()
 	end
 	self.Pickable = false
-	self:PickupMessage(ply)
+	self:PickupMessage(ply, self.PickupMsgClass)
 end

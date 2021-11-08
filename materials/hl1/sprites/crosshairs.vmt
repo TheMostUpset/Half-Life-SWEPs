@@ -1,6 +1,6 @@
 "UnlitGeneric"
 {
-	"$basetexture"	"sprites/crosshairs"
+	"$basetexture"	"hl1/sprites/crosshairs"
 	"$additive"		"1"
 	"$vertexcolor"	"1"
 	"$vertexalpha"	"1"

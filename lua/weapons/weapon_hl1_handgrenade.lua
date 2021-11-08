@@ -5,7 +5,6 @@ if CLIENT then
 	SWEP.Author				= "Upset"
 	SWEP.Slot				= 4
 	SWEP.SlotPos			= 0
-	SWEP.HideWhenEmpty		= true
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/grenade")
 
 end
@@ -26,6 +25,7 @@ SWEP.VModel				= Model("models/v_grenade.mdl")
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel
 
+SWEP.IsThrowable		= true -- used for hl coop
 SWEP.ThrowEntity		= "ent_hl1_grenade"
 
 SWEP.Primary.Damage			= 40
@@ -41,29 +41,28 @@ SWEP.Secondary.Automatic	= true
 
 function SWEP:SpecialDT()
 	self:NetworkVar("Float", 2, "StartThrow")
-	self:NetworkVar("Float", 3, "ReleaseThrow")
+	-- self:NetworkVar("Float", 3, "ReleaseThrow")
 end
 
-function SWEP:SpecialDeploy()
-	//self:SetReleaseThrow(1)
-end
+--[[function SWEP:SpecialDeploy()
+	self:SetReleaseThrow(-1)
+end]]
 
-function SWEP:CanHolster()
+--[[function SWEP:CanHolster()
 	return self:GetStartThrow() == 0
-end
+end]]
 
 function SWEP:SpecialHolster()
 	if SERVER and self:rgAmmo() <= 0 then
 		// no more grenades!
 		self.Owner:StripWeapon(self:GetClass())
-		return
 	end
 end
 
 function SWEP:PrimaryAttack()
 	if self:GetStartThrow() <= 0 && self:rgAmmo() > 0 then
 		self:SetStartThrow(CurTime())
-		self:SetReleaseThrow(0)
+		-- self:SetReleaseThrow(0)
 
 		self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 		self:SetWeaponIdleTime(CurTime() + 0.5)
@@ -123,22 +122,14 @@ function SWEP:WeaponIdle()
 		// player "shoot" animation
 		self.Owner:SetAnimation(PLAYER_ATTACK1)
 
-		self:SetReleaseThrow(0)
+		-- self:SetReleaseThrow(0)
 		self:SetStartThrow(0)
 		self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 		self:SetWeaponIdleTime(CurTime() + self.Primary.Delay)
 
 		self:TakeClipPrimary()
-
-		if self:rgAmmo() <= 0 then
-			// just threw last grenade
-			// set attack times in the future, and weapon idle in the future so we can see the whole throw
-			// animation, weapon idle will automatically retire the weapon for us.
-			--self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-			--self:SetWeaponIdleTime(CurTime() + self.Primary.Delay);// ensure that the animation can finish playing
-		end
 		return
-	elseif self:GetReleaseThrow() > 0 then
+	--[[elseif self:GetReleaseThrow() > 0 then
 		// we've finished the throw, restart.
 		self:SetStartThrow(0)
 		
@@ -151,7 +142,7 @@ function SWEP:WeaponIdle()
 		
 		self:SetWeaponIdleTime(CurTime() + math.Rand(10, 15))
 		self:SetReleaseThrow(-1)
-		return
+		return]]
 	end
 	
 	if self:rgAmmo() > 0 then
@@ -165,5 +156,7 @@ function SWEP:WeaponIdle()
 			self:SetWeaponIdleTime(CurTime() + 75.0 / 30.0)
 		end
 		self:SendWeaponAnim(iAnim)
+	else
+		self:RetireWeapon()
 	end
 end

@@ -25,6 +25,7 @@ SWEP.VModel				= Model("models/v_tripmine.mdl")
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel
 
+SWEP.IsThrowable		= true
 SWEP.ThrowEntity		= "hl1_monster_tripmine"
 
 SWEP.Primary.Delay			= 0.3

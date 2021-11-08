@@ -7,6 +7,7 @@ if CLIENT then
 	SWEP.SlotPos			= 3
 	SWEP.CrosshairXY		= {72, 24}
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/hgun")
+	SWEP.AutoIconAngle		= Angle(0, 180, 0)
 
 end
 

@@ -41,9 +41,9 @@ SWEP.ReloadTime			= 2
 SWEP.UnloadTime			= 2
 SWEP.UnloadAnimSpeed	= -.75
 
+SWEP.NoOnRemoveCall		= true
+
 SWEP.Primary.Sound			= Sound("weapons/rocketfire1.wav")
-SWEP.Primary.DamageCVar		= "hl1_sk_plr_dmg_xbow_bolt_plr"
-SWEP.Primary.Damage			= 50
 SWEP.Primary.Recoil			= -5
 SWEP.Primary.Delay			= 1.5
 SWEP.Primary.ClipSize 		= 1
@@ -103,16 +103,15 @@ function SWEP:IsRocketActive()
 	return IsValid(rocketEnt) && !rocketEnt.didHit
 end
 
-function SWEP:Holster(wep)
-	if self:IsRocketActive() && self:IsSpotActive() then
-		return false
-	end
-	self:SetReloadTime(0)
+function SWEP:CanHolster()
+	return !(self:IsRocketActive() && self:IsSpotActive())
+end
+
+function SWEP:SpecialHolster()
 	local spotEnt = self:GetSpotEntity()
 	if IsFirstTimePredicted() and IsValid(spotEnt) then
 		spotEnt:SetNoDraw(true)
 	end
-	return true
 end
 
 function SWEP:OnRemove()

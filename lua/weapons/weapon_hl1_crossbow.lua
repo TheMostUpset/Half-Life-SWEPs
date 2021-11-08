@@ -7,6 +7,7 @@ if CLIENT then
 	SWEP.SlotPos			= 2
 	SWEP.CrosshairXY		= {72, 0}
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/crossbow")
+	SWEP.AutoIconAngle		= Angle(0, 180, 0)
 	
 	net.Receive("HL1CrossbowSniperBolt", function()
 		local pos = net.ReadVector()
@@ -65,8 +66,7 @@ SWEP.MagTime			= 3.5
 SWEP.ReloadSound		= Sound("weapons/xbow_reload1.wav")
 
 SWEP.Primary.Sound			= Sound("weapons/xbow_fire1.wav")
-SWEP.Primary.DamageCVar		= "hl1_sk_plr_dmg_xbow_bolt_plr"
-SWEP.Primary.Damage			= 50
+SWEP.Primary.Damage			= 120 -- damage for SniperBolt (mp rules)
 SWEP.Primary.Recoil			= -2
 SWEP.Primary.Cone			= .01
 SWEP.Primary.Delay			= 0.75
@@ -81,6 +81,9 @@ SWEP.Secondary.Automatic	= true
 
 SWEP.SndHit		= Sound("weapons/xbow_hit1.wav")
 SWEP.SndHitBody	= {Sound("weapons/xbow_hitbod1.wav"), Sound("weapons/xbow_hitbod2.wav")}
+
+SWEP.BOLT_AIR_VELOCITY = 2000
+SWEP.BOLT_WATER_VELOCITY = 1000
 
 function SWEP:SpecialDeploy()
 	if self:Clip1() <= 0 then
@@ -115,7 +118,11 @@ function SWEP:FireSniperBolt()
 	self:WeaponSound(nil, 80)
 	self:EmitSound(self.ReloadSound, 70, 100, 0.5, CHAN_ITEM)
 	self:TakeClipPrimary()
-	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	if self:Clip1() > 0 then
+		self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	else
+		self:SendWeaponAnim(ACT_VM_SECONDARYATTACK)
+	end
 	self.Owner:SetAnimation(PLAYER_ATTACK1)
 	
 	local anglesAim = self.Owner:EyeAngles() + self.Owner:GetViewPunchAngles()
@@ -176,7 +183,7 @@ function SWEP:FireSniperBolt()
 	local dmginfo = DamageInfo()
 	dmginfo:SetAttacker(self.Owner)
 	dmginfo:SetInflictor(self)
-	dmginfo:SetDamage(120)
+	dmginfo:SetDamage(self.Primary.Damage)
 	dmginfo:SetDamageType(bit.bor(DMG_BULLET, DMG_NEVERGIB))
 	dmginfo:SetDamageForce(vecDir * 6000)
 	dmginfo:SetDamagePosition(tr.HitPos)
@@ -187,9 +194,6 @@ function SWEP:FireSniperBolt()
 		phys:ApplyForceOffset(vecDir * 4000, tr.HitPos)
 	end
 end
-	
-local BOLT_AIR_VELOCITY = 2000
-local BOLT_WATER_VELOCITY = 1000
 
 function SWEP:FireBolt()
 	if self:Clip1() <= 0 then
@@ -201,23 +205,34 @@ function SWEP:FireBolt()
 	self:WeaponSound(nil, 80)
 	self:EmitSound(self.ReloadSound, 70, 100, 0.5, CHAN_ITEM)
 	self:TakeClipPrimary()
-	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	if self:Clip1() > 0 then
+		self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	else
+		self:SendWeaponAnim(ACT_VM_SECONDARYATTACK)
+	end
 	self.Owner:SetAnimation(PLAYER_ATTACK1)
 	
-	local anglesAim = self.Owner:EyeAngles() + self.Owner:GetViewPunchAngles()
-	local vecSrc = self.Owner:GetShootPos() - anglesAim:Up() * 2
-	local vecDir = anglesAim:Forward()
-	
 	if SERVER then
+		local anglesAim, vecSrc, vecDir
+		if self.Owner:IsPlayer() then
+			anglesAim = self.Owner:EyeAngles() + self.Owner:GetViewPunchAngles()
+			vecSrc = self.Owner:GetShootPos() - anglesAim:Up() * 2
+			vecDir = anglesAim:Forward()
+		else
+			vecDir = self.Owner:GetAimVector()
+			anglesAim = vecDir:Angle()
+			vecSrc = self.Owner:GetShootPos() - anglesAim:Up() * 2
+		end
+	
 		local pBolt = ents.Create("ent_hl1_crossbow_bolt")
 		if IsValid(pBolt) then
 			pBolt:SetPos(vecSrc)
 			pBolt:SetAngles(anglesAim)
 			pBolt:SetOwner(self.Owner)
 			if self.Owner:WaterLevel() == 3 then				
-				pBolt:SetVelocity(vecDir * BOLT_WATER_VELOCITY)
+				pBolt:SetVelocity(vecDir * self.BOLT_WATER_VELOCITY)
 			else
-				pBolt:SetVelocity(vecDir * BOLT_AIR_VELOCITY)
+				pBolt:SetVelocity(vecDir * self.BOLT_AIR_VELOCITY)
 			end
 			pBolt:SetLocalAngularVelocity(Angle(0,0,10))
 			pBolt:Spawn()
@@ -305,4 +320,12 @@ function SWEP:WeaponIdle(b)
 		end
 	end
 	self.Owner:GetViewModel():SendViewModelMatchingSequence(iAnim)
+end
+
+if SERVER then
+	
+	function SWEP:GetNPCBulletSpread()
+		return 1
+	end
+	
 end

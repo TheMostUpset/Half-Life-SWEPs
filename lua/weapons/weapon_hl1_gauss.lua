@@ -44,6 +44,7 @@ SWEP.Secondary.Delay		= .5
 SWEP.Secondary.Automatic	= true
 
 SWEP.MaxDistance			= 8192
+SWEP.DoSpecialTraceForOwner = false -- backwards beam not hitting owner due to TraceLine, set true to do special TraceHull check just for owner
 
 function SWEP:SpecialDT()
 	self:NetworkVar("Bool", 2, "PrimaryFire")
@@ -74,7 +75,7 @@ function SWEP:GlowSprite(tr, m)
 end
 
 function SWEP:ImpactBalls(tr, m)
-	if IsFirstTimePredicted() and !tr.Entity:IsPlayer() and !tr.Entity:IsNPC() then
+	if IsFirstTimePredicted() and !tr.Entity:IsPlayer() and !tr.Entity:IsNPC() and !tr.Entity:IsNextBot() then
 		local impactfx = EffectData()
 		impactfx:SetOrigin(tr.HitPos)
 		impactfx:SetNormal(tr.HitNormal)
@@ -206,9 +207,7 @@ function SWEP:SecondaryAttack()
 	end
 end
 
-function SWEP:SpecialThink()
-	self:ResetEmptySound()
-	
+function SWEP:HoldTypeThink()
 	if self.Owner:Crouching() or !self.Owner:IsOnGround() then
 		if self:GetHoldType() != self.HoldTypeDucked then
 			self:SetHoldType(self.HoldTypeDucked)
@@ -216,6 +215,11 @@ function SWEP:SpecialThink()
 	elseif self:GetHoldType() != self.HoldType then
 		self:SetHoldType(self.HoldType)
 	end
+end
+
+function SWEP:SpecialThink()
+	self:ResetEmptySound()
+	self:HoldTypeThink()
 	
 	local flPlayAftershock = self:GetPlayAftershock()
 	if flPlayAftershock > 0 && flPlayAftershock < CurTime() then
@@ -346,7 +350,7 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 	local traceMask = MASK_SHOT
 	local pentIgnore = self:TraceFilter()
 
-	self:SendRecoil()	
+	self:SendRecoil()
 	
 	while flDamage > 10 && nMaxHits > 0 do
 		nMaxHits = nMaxHits - 1
@@ -360,6 +364,24 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 			mask = traceMask,
 			filter = pentIgnore
 		})
+		if self.DoSpecialTraceForOwner and isValidOwner and !IsValid(tr.Entity) then
+			tr = util.TraceHull({
+				start = vecSrc,
+				endpos = vecDest,
+				mask = traceMask,
+				filter = pentIgnore,
+				mins = Vector(-1, -1, -1),
+				maxs = Vector(1, 1, 1)
+			})
+			if tr.Entity != self.Owner then
+				tr = util.TraceLine({
+					start = vecSrc,
+					endpos = vecDest,
+					mask = traceMask,
+					filter = pentIgnore
+				})
+			end
+		end
 		if SERVER and isValidOwner then self.Owner:LagCompensation(false) end
 
 		if tr.AllSolid then
@@ -504,7 +526,7 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 							util.Effect( "HL1GaussWallPunchEnter", data2)*/
 							
 							self:ImpactBalls(tr)
-							if !pEntity:IsPlayer() and !pEntity:IsNPC() then
+							if !pEntity:IsPlayer() and !pEntity:IsNPC() and !pEntity:IsNextBot() then
 								self:DoRicochetSound(tr.HitPos)
 								util.Decal("FadingScorch", tr.HitPos - tr.HitNormal, tr.HitPos + tr.HitNormal)
 							end

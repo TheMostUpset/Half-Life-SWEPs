@@ -2,11 +2,13 @@ local defaultvalues = {
 	{"hl1_sv_itemrespawntime", 23},
 	{"hl1_sv_mprules", 0},
 	{"hl1_sv_gauss_tracebackwards", 1},
+	{"hl1_sv_glock_extrabullet", 1},
 	{"hl1_sv_loadout", 0},
 	{"hl1_sv_cmodels", 1},
 	{"hl1_sv_clampammo", 0},
 	{"hl1_sv_unlimitedammo", 0},
 	{"hl1_sv_unlimitedclip", 0},
+	{"hl1_sv_replaceitems", 1},
 	{"hl1_cl_firelight", 1},
 	{"hl1_cl_crosshair", 1},
 	{"hl1_cl_crosshair_scale", 1},
@@ -54,9 +56,12 @@ local function HL1_SettingsPanel(DForm)
 	end
 	DForm:CheckBox("Gauss trace backwards", "hl1_sv_gauss_tracebackwards")
 	DForm:ControlHelp("tired of killing yourself? disable this!")
+	DForm:CheckBox("Glock extra bullet", "hl1_sv_glock_extrabullet")
 	DForm:CheckBox("Spawn with HL1 weapons", "hl1_sv_loadout")
 	DForm:CheckBox("Limit max ammo", "hl1_sv_clampammo")
 	DForm:CheckBox("Unlimited ammo", "hl1_sv_unlimitedammo")
+	DForm:CheckBox("Replace entities on Resized Maps", "hl1_sv_replaceitems")
+	DForm:ControlHelp("makes Resized Maps playable for sandbox")
 	DForm:Help("Client")
 	DForm:CheckBox("Fire lighting", "hl1_cl_firelight")
 	DForm:CheckBox("Crosshair", "hl1_cl_crosshair")

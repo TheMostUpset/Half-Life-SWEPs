@@ -7,6 +7,7 @@ if CLIENT then
 	SWEP.SlotPos			= 0
 	SWEP.CrosshairXY		= {24, -.5}
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/glock")
+	SWEP.AutoIconAngle		= Angle(90, -90, 0)
 
 end
 
@@ -88,13 +89,19 @@ function SWEP:GlockFire(flSpread, flCycleTime, fUseAutoAim)
 	self:SetWeaponIdleTime(CurTime() + math.Rand(10, 15))
 end
 
+local cvar_extrabullet = CreateConVar("hl1_sv_glock_extrabullet", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Give one extra bullet for Glock after reloading when mag is not empty (like in early HL releases)")
+
 function SWEP:Reload()
 	local iResult
 	if self:Clip1() == 0 then
 		self.Primary.ClipSize = 17
 		iResult = self:DefReload(ACT_GLOCK_SHOOT_RELOAD, self.ReloadTime)		
 	else
-		self.Primary.ClipSize = 18
+		if cvar_extrabullet:GetBool() then
+			self.Primary.ClipSize = 18
+		else
+			self.Primary.ClipSize = 17
+		end
 		iResult = self:DefReload(ACT_VM_RELOAD, self.ReloadTime)
 	end
 	if iResult then

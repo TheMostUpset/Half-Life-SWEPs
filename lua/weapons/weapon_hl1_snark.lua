@@ -7,6 +7,7 @@ if CLIENT then
 	SWEP.SlotPos			= 3
 	SWEP.HideWhenEmpty		= true
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/snark")
+	SWEP.WorldModelSequence = 1
 
 end
 
@@ -26,6 +27,7 @@ SWEP.VModel				= Model("models/v_squeak.mdl")
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel
 
+SWEP.IsThrowable		= true
 SWEP.ThrowEntity		= "monster_snark"
 
 SWEP.HuntSounds = {

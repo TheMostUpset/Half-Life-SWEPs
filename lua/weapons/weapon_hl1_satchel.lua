@@ -7,6 +7,7 @@ if CLIENT then
 	SWEP.SlotPos			= 1
 	SWEP.HideWhenEmpty		= true
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/satchel")
+	SWEP.AutoIconAngle		= Angle(0, -90, 0)
 
 end
 
@@ -31,7 +32,10 @@ SWEP.PlayerModel		= Model("models/hl1/p_satchel.mdl")
 SWEP.ViewModel			= SWEP.ModelSatchelView
 SWEP.WorldModel			= SWEP.PlayerModel
 
+SWEP.IsThrowable		= true
 SWEP.ThrowEntity		= "hl1_monster_satchel"
+
+SWEP.NoOnRemoveCall		= true
 
 SWEP.Primary.Delay			= 1
 SWEP.Primary.ClipSize 		= -1
@@ -52,14 +56,15 @@ function SWEP:SpecialDeploy()
 	self:SendWeaponAnim(ACT_VM_DRAW)
 end
 
-function SWEP:Holster(wep)
+--[[function SWEP:CanHolster()
+	return self:GetInAttack() != 2
+end]]
+
+function SWEP:SpecialHolster()
 	if SERVER and self:rgAmmo() <= 0 and self:GetInAttack() != 1 then
 		self.Owner = self:GetOwner()
 		self.Owner:StripWeapon(self:GetClass())
-		return true
 	end
-	if self:GetInAttack() == 2 then return false end
-	return true
 end
 
 function SWEP:PrimaryAttack()

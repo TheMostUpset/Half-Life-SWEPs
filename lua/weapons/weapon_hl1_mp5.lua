@@ -7,6 +7,7 @@ if CLIENT then
 	SWEP.SlotPos			= 0
 	SWEP.CrosshairXY		= {0, 48}
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/mp5")
+	SWEP.AutoIconAngle		= Angle(-90, 90, 0)
 
 end
 
@@ -140,11 +141,8 @@ end
 
 function SWEP:WeaponIdle()
 	local iAnim
-	if IsFirstTimePredicted() then
-		self.flRand = math.random(0, 1)
-	end
-	local flRand = self.flRand
-	if flRand == 0 then		
+	local flRand = util.SharedRandom("flRand", 0, 1)
+	if flRand < .5 then		
 		iAnim = self:LookupSequence("longidle")
 	else
 		iAnim = self:LookupSequence("idle1")

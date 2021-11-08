@@ -17,6 +17,8 @@ local weps = {
 	{"weapon_hl1_snark", "snark"},
 }
 
+SWEP.IsHL1Base			= true
+
 SWEP.Weight				= -1
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
@@ -67,7 +69,7 @@ if SERVER then
 		if ply and IsValid(ply) and (!ply:IsSuperAdmin() or !ply:Alive()) then return end
 		
 		if args[1] then
-			for k, v in pairs(player.GetAll()) do
+			for k, v in ipairs(player.GetAll()) do
 				if v:Nick():lower() == args[1]:lower() then
 					ply = v
 					break
@@ -102,7 +104,7 @@ else
 	SWEP.CrosshairWH		= {24, 24}
 	SWEP.CrosshairColor		= Color(255, 180, 0, 255) -- default value if GSRCHUD is disabled
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/glock")
-	
+
 	SWEP.ViewModelOffset = {
 		PosForward = 0,
 		PosRight = 0,
@@ -117,14 +119,17 @@ else
 	for _, v in pairs(weps) do
 		killicon.Add(v[1], "hl1/icons/"..v[2], killiconCol)
 	end
-	killicon.Add("hornet", "hl1/icons/hgun", killiconCol)
-	killicon.Add("ent_hl1_hornet", "hl1/icons/hgun", killiconCol)
-	killicon.Add("ent_hl1_rpg_rocket", "hl1/icons/rpg", killiconCol)
-	killicon.Add("ent_hl1_cgrenade", "hl1/icons/grenade", killiconCol)
-	killicon.Add("ent_hl1_grenade", "hl1/icons/grenade", killiconCol)
-	killicon.Add("monster_tripmine", "hl1/icons/tripmine", killiconCol)
-	killicon.Add("monster_satchel", "hl1/icons/satchel", killiconCol)
-	killicon.Add("monster_snark", "hl1/icons/snark", killiconCol)
+	killicon.AddAlias("ent_hl1_crossbow_bolt", "weapon_hl1_crossbow")
+	killicon.AddAlias("ent_hl1_hornet", "weapon_hl1_hornetgun")
+	killicon.AddAlias("hornet", "ent_hl1_hornet")
+	killicon.AddAlias("ent_hl1_rpg_rocket", "weapon_hl1_rpg")
+	killicon.AddAlias("ent_hl1_grenade", "weapon_hl1_handgrenade")
+	killicon.AddAlias("ent_hl1_cgrenade", "ent_hl1_grenade")
+	killicon.AddAlias("hl1_monster_tripmine", "weapon_hl1_tripmine")
+	killicon.AddAlias("monster_tripmine", "hl1_monster_tripmine")
+	killicon.AddAlias("hl1_monster_satchel", "weapon_hl1_satchel")
+	killicon.AddAlias("monster_satchel", "hl1_monster_satchel")
+	killicon.AddAlias("monster_snark", "weapon_hl1_snark")
 	
 	CreateClientConVar("hl1_cl_firelight", 1, true, false, "Muzzleflash and explosion dynamic light")
 	
@@ -230,8 +235,19 @@ function SWEP:ItemShouldRespawn()
 	return self:CreatedByMap() and (self:IsMultiplayerRules() or (!game.SinglePlayer() and GAMEMODE.Cooperative)) or self.rRespawnable
 end
 
+function SWEP:CreatedFromBreakable()
+	local owner = self:GetOwner()
+	return IsValid(owner) and (owner:GetClass() == "func_breakable" or owner:GetClass() == "func_pushable" or owner:GetClass() == "func_physbox")
+end
+
+function SWEP:CreatedFromHL1NPC()
+	local owner = self:GetOwner()
+	return IsValid(owner) and owner:IsNPC() and !IsValid(owner:GetActiveWeapon())
+end
+
 function SWEP:Initialize()
-	if !self:GetOwner() or !IsValid(self:GetOwner()) then
+	local owner = self:GetOwner()
+	if !owner or !IsValid(owner) or self:CreatedFromBreakable() then
 		if self.EntModel then
 			self.WorldModel = self.EntModel
 			self:SetModel(self.WorldModel)
@@ -257,9 +273,7 @@ function SWEP:Initialize()
 		end
 	end
 	
-	-- detecting weapon drop by HLS NPCs
-	local owner = self:GetOwner()
-	if IsValid(owner) and owner:IsNPC() and !IsValid(owner:GetActiveWeapon()) then
+	if self:CreatedFromHL1NPC() then
 		self:SetModelScale(1.25)
 		local phys = self:GetPhysicsObject()
 		if IsValid(phys) then
@@ -273,7 +287,7 @@ function SWEP:Initialize()
 	self:SpecialInit()
 	self:ApplyViewModel()
 end
-	
+
 function SWEP:ApplyViewModel()
 	if GetGlobalBool("hl1_sv_cmodels", true) then
 		if self.CModel and self.ViewModel != self.CModel then
@@ -407,12 +421,12 @@ end
 function SWEP:Holster(wep)
 	if CLIENT and IsValid(self.Owner) and self.Owner != LocalPlayer() then return end
 	
-	if self == wep then
+	if self == wep or !self:CanHolster() then
 		return
 	end
 	self:SetReloadTime(0)
 	self:SpecialHolster()
-	self:OnRemove()
+	if !self.NoOnRemoveCall then self:OnRemove() end
 	return true
 end
 
@@ -507,6 +521,8 @@ function SWEP:CanHolster()
 end
 
 function SWEP:GetNextBestWeapon(pPlayer, pCurrentWeapon)
+	if SERVER and !game.SinglePlayer() then return end
+
 	local iBestWeight = -1
 	local pBest = NULL
 	
@@ -516,38 +532,46 @@ function SWEP:GetNextBestWeapon(pPlayer, pCurrentWeapon)
 	end
 	
 	for _, pCheck in ipairs(pPlayer:GetWeapons()) do
-		if IsValid(pCheck) and pCheck:IsScripted() and pCheck.Base == "weapon_hl1_base" then
-			print(pCheck, pCheck.Weight)
+		if IsValid(pCheck) and pCheck:IsScripted() and pCheck.IsHL1Base then
 			if pCheck.Weight > -1 && pCheck.Weight == pCurrentWeapon.Weight && pCheck != pCurrentWeapon then
 				// this weapon is from the same category. 
 				if pCheck:CanDeploy() then
-					//if pPlayer->SwitchWeapon( pCheck ) then
-						//return true
-					//end
+					if self:SwitchWeapon(pCheck, pPlayer) then
+						return true
+					end
 				end
 			elseif pCheck.Weight > iBestWeight && pCheck != pCurrentWeapon then // don't reselect the weapon we're trying to get rid of
 				if pCheck:CanDeploy() then
 					// if this weapon is useable, flag it as the best
 					iBestWeight = pCheck.Weight
 					pBest = pCheck
-					//break
 				end
 			end
 		end
 	end
 
-	if !pBest then
+	if !IsValid(pBest) then
 		return false
 	end
-	
-	self.Owner:SelectWeapon(pBest:GetClass())
+
+	self:SwitchWeapon(pBest, pPlayer)
 	
 	return true
 end
 
+function SWEP:SwitchWeapon(wep, ply)
+	ply = ply or self.Owner
+	if game.SinglePlayer() then
+		ply:SelectWeapon(wep:GetClass())
+	elseif CLIENT and IsFirstTimePredicted() then
+		input.SelectWeapon(wep)
+	end
+end
+
 function SWEP:RetireWeapon()
-	-- this should work only in MP
-	//self:GetNextBestWeapon(self.Owner, self)
+	if self:IsMultiplayerRules() then
+		self:GetNextBestWeapon(self.Owner, self)
+	end
 end
 
 function SWEP:SetPlayerAnimation(anim)
@@ -558,6 +582,10 @@ function SWEP:SetPlayerAnimation(anim)
 		net.WriteInt(anim, 12)
 		net.Broadcast()
 	end
+end
+
+function SWEP:FireAnimationEvent(pos, ang, event, options)
+	if event == 5001 then return true end
 end
 
 function SWEP:TraceFilter() -- used for crowbar, gauss, egon, snark traces
@@ -664,7 +692,7 @@ function SWEP:WeaponSound(snd, lvl, pitch)
 	lvl = lvl or 100
 	pitch = pitch or 100
 	self:EmitSound(snd, lvl, pitch, 1)
-	if lvl >= 100 then
+	if lvl >= 100 and IsValid(self.Owner) and self.Owner:IsPlayer() then
 		self:InsertSound(1, self.Owner:GetShootPos(), 600, 3)
 	end
 end
@@ -693,8 +721,12 @@ function SWEP:ShootBullet(damage, num_bullets, aimcone)
 	bullet.Force	= 4
 	bullet.Damage	= damage
 	bullet.AmmoType = "Pistol"
+	-- bullet.Callback = self.BulletCallback
 	
 	self.Owner:FireBullets(bullet)
+end
+
+function SWEP:BulletCallback(tr, dmginfo)
 end
 
 function SWEP:SendRecoil(angle)
@@ -906,17 +938,29 @@ function SWEP:AdjustMouseSensitivity()
 	end
 end
 
+function SWEP:DrawEntityModel()
+	self:DrawModel()
+	if self.WorldModelSequence and self.WorldModelSequence > 0 then
+		self:FrameAdvance()
+		self:ResetSequence(self.WorldModelSequence)
+	end
+end
+
+function SWEP:DrawPlayerModel()
+	self:DrawModel()
+end
+
 function SWEP:DrawWorldModel()
-	if !IsValid(self.Owner) then
+	if !IsValid(self.Owner) or self:CreatedFromBreakable() then
 		if self.EntModel then
 			self:SetModel(self.WorldModel)
 		end
-		self:DrawModel()
+		self:DrawEntityModel()
 		return
 	elseif self.PlayerModel and self.WorldModel != self.PlayerModel then
 		self.WorldModel = self.PlayerModel
 	end
-	self:DrawModel()
+	self:DrawPlayerModel()
 end
 
 local cvar_bob = CreateClientConVar("hl1_cl_bob", 0.01, true, false)
@@ -998,6 +1042,33 @@ function SWEP:CalcBobWON()
 	return bob
 end
 
+function SWEP:CalcRoll(ply)
+	if ply:GetMoveType() == MOVETYPE_NOCLIP then return 0 end
+
+	local sign
+
+	local cl_rollangle = cvar_rollangle:GetFloat()
+	local cl_rollspeed = cvar_rollspeed:GetFloat()
+	
+	local side = ply:GetVelocity():Dot(ply:EyeAngles():Right())
+	if side < 0 then
+		sign = -1
+	else
+		sign = 1
+	end
+	side = math.abs(side)
+	
+	local value = cl_rollangle
+	
+	if (side < cl_rollspeed) then
+		side = side * value / cl_rollspeed
+	else
+		side = value
+	end
+	
+	return side * sign
+end
+
 function SWEP:CalcView(ply, pos, ang, fov)
 	local punchangle = ply.punchangle
 	if punchangle then
@@ -1006,41 +1077,18 @@ function SWEP:CalcView(ply, pos, ang, fov)
 	end
 	
 	if !cvar_hl2bob:GetBool() and ply:IsValid() and ply:Alive() and !ply:InVehicle() and !ply:ShouldDrawLocalPlayer() then
-
-		//calcroll
-		
-		local sign
-		
-		local cl_rollangle = cvar_rollangle:GetFloat()
-		local cl_rollspeed = cvar_rollspeed:GetFloat()
-		
-		local side = ply:GetVelocity():Dot(ply:EyeAngles():Right())
-		if side < 0 then
-			sign = -1
-		else
-			sign = 1
-		end
-		side = math.abs(side)
-		
-		local value = cl_rollangle
-		
-		if (side < cl_rollspeed) then
-			side = side * value / cl_rollspeed
-		else
-			side = value
-		end
-		
-		local bob
-		if cvar_bob_won:GetBool() then
+		local bob = self:CalcBob()
+		--[[if cvar_bob_won:GetBool() then
 			bob = self:CalcBobWON()
 		else
 			bob = self:CalcBob()
-		end
+		end]]
+		local roll = self:CalcRoll(ply)
 		
 		if cvar_viewbob:GetBool() then
 			pos[3] = pos[3] + bob
 		end
-		ang.r = ang.r + side * sign
+		ang.r = ang.r + roll
 	end
 	
 	return pos, ang
@@ -1054,17 +1102,19 @@ function SWEP:CalcViewModelView(vm, oldPos, oldAng, pos, ang)
 		return pos, ang
 	end
 	
-	local bob
-	if cvar_bob_won:GetBool() then
+	local bob = self:CalcBob()
+	--[[if cvar_bob_won:GetBool() then
 		bob = self:CalcBobWON()
 	else
 		bob = self:CalcBob()
-	end
+	end]]
 	
-	oldPos = oldPos + oldAng:Forward() * self.ViewModelOffset.PosForward + oldAng:Right() * self.ViewModelOffset.PosRight + oldAng:Up() * self.ViewModelOffset.PosUp
-	oldAng:RotateAroundAxis(oldAng:Forward(), self.ViewModelOffset.AngForward)
-	oldAng:RotateAroundAxis(oldAng:Right(), self.ViewModelOffset.AngRight)
-	oldAng:RotateAroundAxis(oldAng:Up(), self.ViewModelOffset.AngUp)
+	if self.ViewModelOffset then
+		oldPos = oldPos + oldAng:Forward() * self.ViewModelOffset.PosForward + oldAng:Right() * self.ViewModelOffset.PosRight + oldAng:Up() * self.ViewModelOffset.PosUp
+		oldAng:RotateAroundAxis(oldAng:Forward(), self.ViewModelOffset.AngForward)
+		oldAng:RotateAroundAxis(oldAng:Right(), self.ViewModelOffset.AngRight)
+		oldAng:RotateAroundAxis(oldAng:Up(), self.ViewModelOffset.AngUp)
+	end
 	
 	oldPos = oldPos + oldAng:Forward() * bob * .4 - Vector(0, 0, 1)
 	if cvar_viewbob:GetBool() then
@@ -1072,9 +1122,9 @@ function SWEP:CalcViewModelView(vm, oldPos, oldAng, pos, ang)
 	end
 
 	if cvar_bob_won:GetBool() then
-		oldAng.p = oldAng.p - bob * 0.3
 		oldAng.y = oldAng.y - bob * 0.5
-		oldAng.r = oldAng.r - bob * 1.0
+		oldAng.r = oldAng.r - bob * 1
+		oldAng.p = oldAng.p + bob * 0.3
 	end
 	
 	if self.HideWhenEmpty and self:rgAmmo() <= 0 then -- hide when no ammo left
@@ -1083,7 +1133,11 @@ function SWEP:CalcViewModelView(vm, oldPos, oldAng, pos, ang)
 	
 	self:SetViewModelFOV(cvar_vmfov:GetInt())
 
-	return oldPos, oldAng
+	return self:GetViewModelPosition(oldPos, oldAng)
+end
+
+function SWEP:GetViewModelPosition(pos, ang)
+	return pos, ang
 end
 
 function SWEP:ViewModelHide(pos, ang)
@@ -1138,9 +1192,8 @@ function SWEP:DoDrawCrosshair(x, y)
 	
 	local chColor = self.CrosshairColor
 	
-	if GSRCHUD and GSRCHUD:IsEnabled() and cvar_chair_col:GetBool() then
-		local curTheme = GSRCHUD:GetCurrentTheme()
-		chColor = GSRCHUD:GetThemeDefaultColor(curTheme)
+	if GSRCHUD and GSRCHUD.isEnabled() and cvar_chair_col:GetBool() then
+		chColor = GSRCHUD.getCurrentColour()
 	end
 	
 	surface.SetDrawColor(chColor)

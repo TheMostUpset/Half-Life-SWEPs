@@ -25,7 +25,7 @@ function ENT:ImpactEffect(tr)
 	end
 	
 	local effect = "Impact"
-	if tr.Entity:IsNPC() or tr.Entity:IsPlayer() then
+	if tr.Entity:IsNPC() or tr.Entity:IsPlayer() or tr.Entity:IsNextBot() then
 		effect = "BloodImpact"
 	end
 

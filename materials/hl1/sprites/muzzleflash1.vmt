@@ -1,6 +1,6 @@
 "UnlitGeneric"
 {
-	"$basetexture" "hl1/sprites/muzzleflash1"
+	"$basetexture" "sprites/muzzleflash1_hl1"
 	"$additive" 1
 	"Proxies"
 	{

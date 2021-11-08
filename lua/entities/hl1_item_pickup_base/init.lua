@@ -12,7 +12,7 @@ function ENT:Initialize()
 	self:SetModel(self.Model)
 	self:SetMoveType(MOVETYPE_FLYGRAVITY)
 	self:SetMoveCollide(MOVECOLLIDE_FLY_BOUNCE)
-	self:SetSolid(SOLID_BSP)
+	-- self:SetSolid(SOLID_BSP)
 	self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 	self:SetCollisionBounds(Vector(-8, -8, 0), Vector(8, 8, 8))
 	self:SetTrigger(true)
@@ -95,8 +95,9 @@ function ENT:Touch(ent)
 	end
 end
 
-function ENT:PickupMessage(ent)
+function ENT:PickupMessage(ent, class)
+	class = class or self:GetClass()
 	net.Start("HL1_HUDPickupMessage")
-	net.WriteString(self:GetClass())
+	net.WriteString(class)
 	net.Send(ent)
 end

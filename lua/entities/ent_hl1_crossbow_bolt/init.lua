@@ -12,6 +12,11 @@ function ENT:Initialize()
 	self:SetSolid(SOLID_NONE)
 	self:SetModel(self.Model)
 	self:SetCollisionBounds(Vector(), Vector())
+	if IsValid(self.Owner) and !self.Owner:IsPlayer() then
+		self:SetSolid(SOLID_BBOX)
+		self:SetMoveCollide(MOVECOLLIDE_FLY_BOUNCE)
+		return
+	end
 	self:NextThink(CurTime())
 	
 	if !game.SinglePlayer() then
@@ -25,6 +30,14 @@ function ENT:Initialize()
 			self:BoltTouch(tr)
 		end
 	end
+	
+	self.HitCheckDist = math.Clamp(2000 * FrameTime() - 18, 12, 96)
+	self.HitCheckDist = math.ceil(self.HitCheckDist)
+end
+
+function ENT:StartTouch(ent)
+	if self.Owner:IsPlayer() then return end
+	self:BoltTouch(self:GetTouchTrace())
 end
 
 function ENT:BoltTouch(tr)
@@ -33,18 +46,20 @@ function ENT:BoltTouch(tr)
 	self.didHit = true
 	if pOther:Health() > 0 then
 		local pevOwner = self:GetOwner()
-		local dmg = cvars.Number("hl1_sk_plr_dmg_xbow_bolt_npc", 50)		
-		if pOther:IsPlayer() then
-			dmg = cvars.Number("hl1_sk_plr_dmg_xbow_bolt_plr", 10)
+		if IsValid(pevOwner) then
+			local dmg = cvars.Number("hl1_sk_plr_dmg_xbow_bolt_npc", 50)
+			if pOther:IsPlayer() then
+				dmg = cvars.Number("hl1_sk_plr_dmg_xbow_bolt_plr", 10)
+			end
+			local dmginfo = DamageInfo()
+			dmginfo:SetAttacker(pevOwner)
+			dmginfo:SetInflictor(self)
+			dmginfo:SetDamage(dmg)
+			dmginfo:SetDamageType(bit.bor(DMG_BULLET, DMG_NEVERGIB))
+			dmginfo:SetDamageForce(self:GetForward() * 8000)
+			dmginfo:SetDamagePosition(tr.HitPos)
+			pOther:DispatchTraceAttack(dmginfo, tr)
 		end
-		local dmginfo = DamageInfo()
-		dmginfo:SetAttacker(pevOwner)
-		dmginfo:SetInflictor(self)
-		dmginfo:SetDamage(dmg)
-		dmginfo:SetDamageType(bit.bor(DMG_BULLET, DMG_NEVERGIB))
-		dmginfo:SetDamageForce(self:GetForward() * 8000)
-		dmginfo:SetDamagePosition(tr.HitPos)
-		pOther:DispatchTraceAttack(dmginfo, tr)
 		self:SetLocalVelocity(Vector(0, 0, 0))
 	
 		// play body "thwack" sound
@@ -96,11 +111,12 @@ function ENT:BoltTouch(tr)
 	end
 end
 
-function ENT:Think()	
+function ENT:Think()
+	if !self.HitCheckDist or self.didHit then return end
 	local entFilter = self:TraceFilter()
 	local tr = util.TraceLine({
 		start = self:GetPos() - self:GetForward() * 12,
-		endpos = self:GetPos() + self:GetForward() * 12,
+		endpos = self:GetPos() + self:GetForward() * self.HitCheckDist,
 		filter = entFilter
 	})
 	if !self.didHit and tr.Hit then
@@ -127,7 +143,9 @@ function ENT:Explode(tr)
 	util.Effect("hl1_explosion", explosion, true, true)
 	self:EmitSound("hl1/weapons/explode"..math.random(3,5)..".wav", 400, 100, 1, CHAN_ITEM)
 
-	util.BlastDamage(self, self.Owner, tr.HitPos, 128, self.dmg)
+	if IsValid(self.Owner) then
+		util.BlastDamage(self, self.Owner, tr.HitPos, 128, self.dmg)
+	end
 	
 	self:Remove()
 end

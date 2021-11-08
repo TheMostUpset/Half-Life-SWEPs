@@ -7,6 +7,7 @@ if CLIENT then
 	SWEP.SlotPos			= 2
 	SWEP.CrosshairXY		= {72, 48}
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/egon")
+	SWEP.AutoIconAngle		= Angle(0, 90, 0)
 
 end
 
@@ -201,7 +202,7 @@ function SWEP:EgonFire(vecOrigSrc, vecDir)
 				pEntity:DispatchTraceAttack(dmginfo, tr, vecDir)
 				
 				local phys = pEntity:GetPhysicsObject()
-				if !pEntity:IsNPC() and !pEntity:IsPlayer() and IsValid(phys) then
+				if !pEntity:IsNPC() and !pEntity:IsNextBot() and !pEntity:IsPlayer() and IsValid(phys) then
 					phys:ApplyForceOffset(vecDir * 10000, tr.HitPos)
 					if game.SinglePlayer() and phys:GetMass() <= 100 then
 						if !self.Dissolver or !IsValid(self.Dissolver) then

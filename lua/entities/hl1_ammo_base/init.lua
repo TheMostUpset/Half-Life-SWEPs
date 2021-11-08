@@ -1,6 +1,8 @@
 AddCSLuaFile("shared.lua")
 include('shared.lua')
 
+ENT.PickupSound = "items/9mmclip1.wav"
+
 function ENT:Pickup(ent)
 	local cvar = cvars.Bool("hl1_sv_clampammo")
 	local ammoCount = ent:GetAmmoCount(self.AmmoType)
@@ -20,6 +22,6 @@ function ENT:Pickup(ent)
 	else
 		ent:GiveAmmo(self.AmmoAmount, self.AmmoType)
 	end
-	ent:EmitSound("items/9mmclip1.wav", 85, 100, 1, CHAN_ITEM)
+	ent:EmitSound(self.PickupSound, 85, 100, 1, CHAN_ITEM)
 	self.Pickable = false
 end

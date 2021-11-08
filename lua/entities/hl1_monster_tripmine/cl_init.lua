@@ -2,7 +2,8 @@ include('shared.lua')
 
 ENT.RenderGroup = RENDERGROUP_BOTH
 
-local laser = Material("hl1/sprites/laserbeam")
+ENT.LaserMaterial = Material("hl1/sprites/laserbeam")
+ENT.LaserColor = Color(0, 214, 198, 64)
 
 function ENT:Think()
 	self.tr = util.TraceHull({
@@ -23,7 +24,7 @@ function ENT:DrawTranslucent()
 
 	if tr then
 		local texScroll = CurTime() * 10
-		render.SetMaterial(laser)
-		render.DrawBeam(tr.StartPos, tr.HitPos, 2, texScroll, texScroll, Color(0, 214, 198, 64))
+		render.SetMaterial(self.LaserMaterial)
+		render.DrawBeam(tr.StartPos, tr.HitPos, 2, texScroll, texScroll, self.LaserColor)
 	end
 end

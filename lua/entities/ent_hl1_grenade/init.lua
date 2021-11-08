@@ -104,8 +104,7 @@ function ENT:Touch(pOther)
 	})
 
 	if tr.Fraction < 1.0 then
-		self:SetSequence(self:SelectWeightedSequence(ACT_IDLE))
-		self:SetAngles(Angle())
+		self:TouchGround()
 	end
 
 	if !pOther:IsWorld() then
@@ -151,6 +150,11 @@ function ENT:Think()
 		self:SetPlaybackRate(0.2)
 	end
 	return true
+end
+
+function ENT:TouchGround()
+	self:SetSequence(self:SelectWeightedSequence(ACT_IDLE))
+	self:SetAngles(Angle())
 end
 
 function ENT:BounceSound()

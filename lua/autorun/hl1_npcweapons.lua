@@ -1,5 +1,6 @@
 local weapons = {
 	["weapon_hl1_357"] = "HL1 .357 Magnum",
+	["weapon_hl1_crossbow"] = "HL1 Crossbow",
 	["weapon_hl1_glock"] = "HL1 Glock",
 	["weapon_hl1_hornetgun"] = "HL1 Hivehand",
 	["weapon_hl1_mp5"] = "HL1 MP5",

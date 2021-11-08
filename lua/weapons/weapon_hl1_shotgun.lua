@@ -7,6 +7,7 @@ if CLIENT then
 	SWEP.SlotPos			= 1
 	SWEP.CrosshairXY		= {48, 24}
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/shotgun")
+	SWEP.AutoIconAngle		= Angle(180, 0, 90)
 	
 	SWEP.ViewModelOffset = {
 		PosForward = -.5,
@@ -216,7 +217,8 @@ function SWEP:SpecialThink()
 		self:SetflPumpTime(0)
 	end
 	
-	if self:GetWeaponIdleTime() < CurTime() then	
+	local idleTime = self:GetWeaponIdleTime()
+	if idleTime > 0 and idleTime < CurTime() then	
 		if (self:Clip1() == 0 && self:GetfInSpecialReload() == 0 && self:rgAmmo() > 0) then
 			self:Reload()
 		elseif self:GetfInSpecialReload() != 0 then
@@ -232,21 +234,25 @@ function SWEP:SpecialThink()
 				self:SetWeaponIdleTime(CurTime() + 1.5)
 			end
 		else
-			local iAnim
-			local flRand = util.SharedRandom("flRand", 0, 1)
-			if flRand <= .8 then
-				iAnim = ACT_SHOTGUN_IDLE_DEEP
-				self:SetWeaponIdleTime(CurTime() + 60.0/12.0)
-			elseif flRand <= .95 then
-				iAnim = ACT_VM_IDLE
-				self:SetWeaponIdleTime(CurTime() + 20.0/9.0)
-			else
-				iAnim = ACT_SHOTGUN_IDLE4
-				self:SetWeaponIdleTime(CurTime() + 20.0/9.0)
-			end
-			self:SendWeaponAnim(iAnim)
+			self:ShotgunIdle()
 		end
 	end
+end
+
+function SWEP:ShotgunIdle()
+	local iAnim
+	local flRand = util.SharedRandom("flRand", 0, 1)
+	if flRand <= .8 then
+		iAnim = ACT_SHOTGUN_IDLE_DEEP
+		self:SetWeaponIdleTime(CurTime() + 60.0/12.0)
+	elseif flRand <= .95 then
+		iAnim = ACT_VM_IDLE
+		self:SetWeaponIdleTime(CurTime() + 20.0/9.0)
+	else
+		iAnim = ACT_SHOTGUN_IDLE4
+		self:SetWeaponIdleTime(CurTime() + 20.0/9.0)
+	end
+	self:SendWeaponAnim(iAnim)
 end
 
 if SERVER then

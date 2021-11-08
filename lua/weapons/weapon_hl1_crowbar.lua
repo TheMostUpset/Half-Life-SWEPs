@@ -6,6 +6,7 @@ if CLIENT then
 	SWEP.Slot				= 0
 	SWEP.SlotPos			= 0
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/crowbar")
+	SWEP.AutoIconAngle		= Angle(-20, 0, 90)
 
 end
 
@@ -63,6 +64,23 @@ local textureVol = {
 local noFleshSound = {
 	["monster_miniturret"] = true,
 	["monster_turret"] = true,
+	["monster_sentry"] = true,
+	["monster_gargantua"] = true,
+	["class C_BaseHelicopter_HL1"] = true,
+	["monster_osprey"] = true,
+	["monster_apache"] = true,
+	["npc_turret_floor"] = true,
+	["npc_strider"] = true,
+	["npc_combine_camera"] = true,
+	["npc_turret_ceiling"] = true,
+	["npc_cscanner"] = true,
+	["npc_combinedropship"] = true,
+	["npc_combinegunship"] = true,
+	["npc_helicopter"] = true,
+	["npc_manhack"] = true,
+	["npc_rollermine"] = true,
+	["npc_clawscanner"] = true,
+	["npc_dog"] = true,
 }
 
 function SWEP:FindHullIntersection(vecSrc, tr, mins, maxs, pEntity)
@@ -189,7 +207,7 @@ function SWEP:Swing(fFirst)
 		local pEntity = tr.Entity
 		
 		if pEntity then
-			if (pEntity:IsPlayer() or pEntity:IsNPC()) and !noFleshSound[pEntity:GetClass()] then				
+			if (pEntity:IsPlayer() or pEntity:IsNPC() or pEntity:IsNextBot()) and !noFleshSound[pEntity:GetClass()] then				
 				self:EmitSound(self.PrimaryHitBodSounds[math.random(1,3)], 85, 100, 1, CHAN_ITEM)
 			else
 				local fvolbar = textureVol[tr.MatType] or 0
@@ -210,7 +228,7 @@ function SWEP:Swing(fFirst)
 				dmginfo:SetAttacker(self.Owner)
 				dmginfo:SetInflictor(self)
 				dmginfo:SetDamageType(DMG_CLUB)
-				if !self:IsMultiplayerRules() and !GAMEMODE.Cooperative and self:GetNextPrimaryFire() + 1 >= CurTime() then
+				if !self:IsMultiplayerRules() and self:GetNextPrimaryFire() + 1 >= CurTime() then
 					// first swing does full damage
 					// subsequent swings do half
 					hitDmg = hitDmg / 2

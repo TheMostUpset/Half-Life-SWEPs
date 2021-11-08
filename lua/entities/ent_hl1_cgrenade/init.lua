@@ -75,7 +75,7 @@ end
 function ENT:StartTouch(ent)
 	local tr = self:GetTouchTrace()
 	local pos, norm = tr.HitPos, tr.HitNormal
-	if ent:IsPlayer() or ent:IsNPC() then
+	if ent:IsPlayer() or ent:IsNPC() or ent:IsNextBot() then
 		self:Explode(self:GetPos() - norm)
 		self:ExplosionEffects(self:GetPos() + Vector(0,0,15))
 	else
