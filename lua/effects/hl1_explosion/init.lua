@@ -1,12 +1,13 @@
 EFFECT.mat = Material("hl1/sprites/zerogxplode")
 local exists = file.Exists("materials/sprites/zerogxplode.vtf", "GAME")
+local cvar_light = GetConVar("hl1_cl_firelight")
 
 function EFFECT:Init(data)
 	self.Pos = data:GetOrigin()
 	self.Norm = data:GetNormal()
 	self.Scale = data:GetScale()
 	
-	if cvars.Bool("hl1_cl_firelight") then
+	if cvar_light:GetBool() then
 		local dynlight = DynamicLight(self:EntIndex())
 		dynlight.Pos = data:GetOrigin()
 		dynlight.Size = 6 * self.Scale

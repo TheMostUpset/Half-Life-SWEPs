@@ -147,5 +147,9 @@ function ENT:Explode(tr)
 		util.BlastDamage(self, self.Owner, tr.HitPos, 128, self.dmg)
 	end
 	
+	if self:IsScreenShakeEnabled() then
+		util.ScreenShake(tr.HitPos, 1, 5, .5, 200)
+	end
+	
 	self:Remove()
 end

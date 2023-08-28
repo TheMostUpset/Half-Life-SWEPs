@@ -44,12 +44,13 @@ if SERVER then
 		{"hl1_sk_plr_dmg_satchel", 150}
 	}
 	for k, v in pairs(dmgCvars) do
-		CreateConVar(v[1], v[2], {FCVAR_NOTIFY, FCVAR_ARCHIVE})
+		CreateConVar(v[1], v[2], FCVAR_NOTIFY)
 	end
 	CreateConVar("hl1_sv_itemrespawntime", 23, FCVAR_NOTIFY, "Respawn time for items in Deathmatch", 0)
 	CreateConVar("hl1_sv_mprules", 0, FCVAR_NOTIFY, "Deathmatch rules in singleplayer", 0, 1)
 	CreateConVar("hl1_sv_loadout", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Players spawn with HL weapons", 0, 1)
 	CreateConVar("hl1_sv_gauss_tracebackwards", 1, FCVAR_NOTIFY, "", 0, 1)
+	CreateConVar("hl1_sv_explosionshake", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Enable screen shake after explosions", 0, 1)
 	
 	hook.Add("PlayerLoadout", "HL1Loadout", function(ply)
 		if cvars.Bool("hl1_sv_loadout") then
@@ -131,7 +132,9 @@ else
 	killicon.AddAlias("monster_satchel", "hl1_monster_satchel")
 	killicon.AddAlias("monster_snark", "weapon_hl1_snark")
 	
-	CreateClientConVar("hl1_cl_firelight", 1, true, false, "Muzzleflash and explosion dynamic light")
+	CreateClientConVar("hl1_cl_firelight", 1, true, false, "Dynamic light from muzzle flash and explosion")
+	CreateClientConVar("hl1_cl_muzzleflash", 1, true, false, "Muzzle flash effect")
+	CreateClientConVar("hl1_cl_muzzlesmoke", 1, true, false, "Muzzle smoke effect")
 	
 end
 
@@ -246,6 +249,13 @@ function SWEP:CreatedFromHL1NPC()
 end
 
 function SWEP:Initialize()
+	-- do you know how it feels when people complain that your addon doesn't work and you have no fucking idea why?
+	-- then ACCIDENTALLY you find out that the reason is some very popular addon
+	-- its shitty code completely breaks these and even official HLS weapons and items, so i have to do this
+	-- and i don't give a fuck if it breaks something else, i had enough unsubs and dislikes from ppl who thought my addon was always broken
+	hook.Remove("PlayerCanPickupWeapon", "VManip_PickupPCPW")
+	hook.Remove("PlayerCanPickupItem", "VManip_PickupPCPI")
+
 	local owner = self:GetOwner()
 	if !owner or !IsValid(owner) or self:CreatedFromBreakable() then
 		if self.EntModel then
@@ -385,7 +395,9 @@ end
 
 function SWEP:EquipAmmo(ply)
 	self:Equip(ply)
-	ply:EmitSound(self.AmmoPickupSound, 75, 100, 1, CHAN_ITEM)
+	if self.Primary.Ammo != "none" then
+		ply:EmitSound(self.AmmoPickupSound, 75, 100, 1, CHAN_ITEM)
+	end
 end
 
 function SWEP:SpecialInit()
@@ -1255,7 +1267,7 @@ function SWEP:PostDrawViewModel(vm, wep, ply)
 			for k, v in pairs(vm:GetMaterials()) do
 				if string.find(v, "chrome") then
 					local mat = Material(v)
-					if !mat:IsError() and mat:GetShader() == "VertexLitGeneric" then
+					if !mat:IsError() and mat:GetShader() == "VertexLitGeneric" and bit.band(mat:GetInt("$flags"), 131072) == 0 then
 						table.insert(self.chromeMats, {vm:GetModel(), mat})
 					end
 				end

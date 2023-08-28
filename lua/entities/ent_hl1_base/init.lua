@@ -47,6 +47,10 @@ function ENT:ExplosionEffects(pos, norm, scale)
 	end
 	
 	self:EmitSound(self.ExplosionSounds[math.random(1,3)], 400, 100, 1, CHAN_ITEM)
+
+	if self:IsScreenShakeEnabled() then
+		util.ScreenShake(pos, scale*.2, scale, 1, scale*50)
+	end
 end
 
 function ENT:InsertSound(sndtype, pos, volume, duration, parent)

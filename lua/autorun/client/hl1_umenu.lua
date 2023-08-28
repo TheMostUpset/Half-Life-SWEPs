@@ -9,7 +9,10 @@ local defaultvalues = {
 	{"hl1_sv_unlimitedammo", 0},
 	{"hl1_sv_unlimitedclip", 0},
 	{"hl1_sv_replaceitems", 1},
+	{"hl1_sv_explosionshake", 0},
 	{"hl1_cl_firelight", 1},
+	{"hl1_cl_muzzleflash", 1},
+	{"hl1_cl_muzzlesmoke", 1},
 	{"hl1_cl_crosshair", 1},
 	{"hl1_cl_crosshair_scale", 1},
 	{"hl1_cl_crosshair_gsrchud", 1},
@@ -57,6 +60,7 @@ local function HL1_SettingsPanel(DForm)
 	DForm:CheckBox("Gauss trace backwards", "hl1_sv_gauss_tracebackwards")
 	DForm:ControlHelp("tired of killing yourself? disable this!")
 	DForm:CheckBox("Glock extra bullet", "hl1_sv_glock_extrabullet")
+	DForm:CheckBox("Shake screen on explosions", "hl1_sv_explosionshake")
 	DForm:CheckBox("Spawn with HL1 weapons", "hl1_sv_loadout")
 	DForm:CheckBox("Limit max ammo", "hl1_sv_clampammo")
 	DForm:CheckBox("Unlimited ammo", "hl1_sv_unlimitedammo")
@@ -64,6 +68,8 @@ local function HL1_SettingsPanel(DForm)
 	DForm:ControlHelp("makes Resized Maps playable for sandbox")
 	DForm:Help("Client")
 	DForm:CheckBox("Fire lighting", "hl1_cl_firelight")
+	DForm:CheckBox("Muzzle flash", "hl1_cl_muzzleflash")
+	DForm:CheckBox("Muzzle smoke", "hl1_cl_muzzlesmoke")
 	DForm:CheckBox("Crosshair", "hl1_cl_crosshair")
 	if GSRCHUD then
 		DForm:CheckBox("Crosshair color uses GSRCHUD theme", "hl1_cl_crosshair_gsrchud")
@@ -98,7 +104,7 @@ local function HL1_SettingsPanel(DForm)
 end
 
 local function HL1_DamageSettingsPanel(DForm)
-	DForm:Help("These values will be saved in your config")
+	DForm:Help("These values will NOT be saved in your config\nPlease add needed convars in skill.cfg (hl1_sk_plr_dmg_*)")
 	local t = {}
 	for k, v in pairs(defaultdmgvalues) do
 		local a, b = DForm:NumberWang(v[1], v[2], 0, 999, 0)

@@ -1,3 +1,5 @@
+local cvar_smoke = GetConVar("hl1_cl_muzzlesmoke")
+
 function EFFECT:GetMuzzleFlashPos( Position, Ent, Attachment )
 	
 	if !IsValid(Ent) or !Ent:IsWeapon() then return Position end
@@ -24,6 +26,8 @@ function EFFECT:GetMuzzleFlashPos( Position, Ent, Attachment )
 end
 
 function EFFECT:Init(data)
+	if !cvar_smoke:GetBool() then return end
+	
 	self.Position = data:GetOrigin()
 	self.WeaponEnt = data:GetEntity()
 	self.Attachment = data:GetAttachment()

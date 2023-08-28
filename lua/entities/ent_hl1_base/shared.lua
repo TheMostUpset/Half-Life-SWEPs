@@ -6,6 +6,10 @@ function ENT:IsMultiplayerRules()
 	return (!game.SinglePlayer() or cvars.Bool("hl1_sv_mprules")) and !(GAMEMODE.Cooperative and !cvars.Bool("hl1_sv_mprules"))
 end
 
+function ENT:IsScreenShakeEnabled()
+	return cvars.Bool("hl1_sv_explosionshake")
+end
+
 function ENT:TraceFilter()
 	return hl1_coop_sv_friendlyfire and !hl1_coop_sv_friendlyfire:GetBool() and player.GetAll() or {self, self.Owner}
 end

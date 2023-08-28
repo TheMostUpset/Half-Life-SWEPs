@@ -1,3 +1,7 @@
+local cvar_light = GetConVar("hl1_cl_firelight")
+local cvar_muzzle = GetConVar("hl1_cl_muzzleflash")
+local cvar_smoke = GetConVar("hl1_cl_muzzlesmoke")
+
 function EFFECT:GetMuzzleFlashPos(Position, Ent, Attachment)
 
 	if !IsValid(Ent) then return Position end
@@ -23,12 +27,12 @@ function EFFECT:GetMuzzleFlashPos(Position, Ent, Attachment)
 	-- Shoot from the world model
 	else
 	
-		local att = Ent:GetAttachment(Attachment)
-		if att then
-			Position = att.Pos
-		else
-			local owner = Ent:GetOwner()
-			if IsValid(owner) then
+		local owner = Ent:GetOwner()
+		if IsValid(owner) and (ply:IsLineOfSightClear(owner) or owner == ply) then
+			local att = Ent:GetAttachment(Attachment)
+			if att then
+				Position = att.Pos
+			else
 				local hand = owner:GetAttachment(owner:LookupAttachment("anim_attachment_rh"))
 				if hand then
 					Position = hand.Pos + hand.Ang:Forward() * self.WPos[1] + hand.Ang:Right() * self.WPos[2] + hand.Ang:Up() * self.WPos[3]
@@ -57,40 +61,44 @@ function EFFECT:Init(data)
 	local pos = self:GetMuzzleFlashPos(self.Position, self.WeaponEnt, self.Attachment)
 	local emitter = ParticleEmitter(pos)
 	
-	self.particle = {}
+	if cvar_muzzle:GetBool() then
+		self.particle = {}
 	
-	for i = 0, math.random(0,1) do
-		self.particle[i] = emitter:Add( "hl1/sprites/muzzleflash", pos )
-		self.particle[i]:SetVelocity( 60 * self.Normal )
-		self.particle[i]:SetGravity( Vector(0,0,0) )
-		self.particle[i]:SetDieTime( self.DieTime )
-		self.particle[i]:SetStartAlpha( 255 )
-		self.particle[i]:SetStartSize( math.Rand(1, 1.2) * self.Size )
-		self.particle[i]:SetEndSize( math.Rand(4, 6) * self.Size )
-		self.particle[i]:SetRoll( math.Rand( -180, 180 ) )
-		self.particle[i]:SetRollDelta( math.Rand( -1, 1 ) )
-		self.particle[i]:SetColor( 255, 255, 255 )	
+		for i = 0, math.random(0,1) do
+			self.particle[i] = emitter:Add( "hl1/sprites/muzzleflash", pos )
+			self.particle[i]:SetVelocity( 60 * self.Normal )
+			self.particle[i]:SetGravity( Vector(0,0,0) )
+			self.particle[i]:SetDieTime( self.DieTime )
+			self.particle[i]:SetStartAlpha( 255 )
+			self.particle[i]:SetStartSize( math.Rand(1, 1.2) * self.Size )
+			self.particle[i]:SetEndSize( math.Rand(4, 6) * self.Size )
+			self.particle[i]:SetRoll( math.Rand( -180, 180 ) )
+			self.particle[i]:SetRollDelta( math.Rand( -1, 1 ) )
+			self.particle[i]:SetColor( 255, 255, 255 )	
+		end
 	end
-		
-	for i = 1, 4 do
-		local smokecol = math.random(40, 170)
-		local smoke = emitter:Add("particle/particle_smokegrenade", pos)
-		smoke:SetVelocity(40 * self.Normal * i)
-		smoke:SetAirResistance(128)
-		smoke:SetGravity(Vector(0, 0, math.Rand(50, 140)))
-		smoke:SetDieTime(math.Rand(.1, .5))
-		smoke:SetStartAlpha(math.Rand(160, 255))
-		smoke:SetEndAlpha(0)
-		smoke:SetStartSize(math.Rand(0, 1) * self.Size)
-		smoke:SetEndSize(math.Rand(5, 10) * self.Size)
-		smoke:SetRoll(math.Rand(-180, 180))
-		smoke:SetRollDelta(math.Rand(-3, 3))
-		smoke:SetColor(smokecol, smokecol, smokecol)
+
+	if cvar_smoke:GetBool() then
+		for i = 1, 4 do
+			local smokecol = math.random(40, 170)
+			local smoke = emitter:Add("particle/particle_smokegrenade", pos)
+			smoke:SetVelocity(40 * self.Normal * i)
+			smoke:SetAirResistance(128)
+			smoke:SetGravity(Vector(0, 0, math.Rand(50, 140)))
+			smoke:SetDieTime(math.Rand(.1, .5))
+			smoke:SetStartAlpha(math.Rand(160, 255))
+			smoke:SetEndAlpha(0)
+			smoke:SetStartSize(math.Rand(0, 1) * self.Size)
+			smoke:SetEndSize(math.Rand(5, 10) * self.Size)
+			smoke:SetRoll(math.Rand(-180, 180))
+			smoke:SetRollDelta(math.Rand(-3, 3))
+			smoke:SetColor(smokecol, smokecol, smokecol)
+		end
 	end
 
 	emitter:Finish()
 	
-	if cvars.Bool("hl1_cl_firelight") then
+	if cvar_light:GetBool() then
 		local dynlight = DynamicLight(self:EntIndex())
 		dynlight.Pos = pos
 		dynlight.Size = 75
@@ -106,6 +114,7 @@ function EFFECT:Init(data)
 end
 
 function EFFECT:Think()
+	if !self.particle then return false end
 	local pos = self:GetMuzzleFlashPos(self.Position, self.WeaponEnt, self.Attachment, self.ModelIndex)
 	for k, v in pairs(self.particle) do
 		v:SetPos(pos)
