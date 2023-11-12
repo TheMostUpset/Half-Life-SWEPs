@@ -775,7 +775,7 @@ local shellType = {
 function SWEP:EjectShell(ent, iType, flip, pos)
 	iType = shellType[iType] or "ShellEject"
 	
-	if !IsFirstTimePredicted() then return end
+	if !IsFirstTimePredicted() or !IsValid(ent) then return end
 
 	local angShellAngles = ent:EyeAngles()
 	if SERVER or CLIENT and ent:ShouldDrawLocalPlayer() then
