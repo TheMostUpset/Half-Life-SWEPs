@@ -20,11 +20,7 @@ function ENT:Initialize()
 	local vecFwd = angAngs:Forward()
 	
 	self:SetLocalVelocity(vecFwd * 250)
-	local svgravity = cvars.Number("sv_gravity", 800)
-	if svgravity != 0 then
-		local gravityMul = 400 / svgravity
-		self:SetGravity(gravityMul)
-	end
+	self:SetCorrectGravity()
 
 	self:NextThink(CurTime() + .4)
 	

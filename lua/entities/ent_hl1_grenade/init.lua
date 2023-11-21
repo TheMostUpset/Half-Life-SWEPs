@@ -37,11 +37,7 @@ function ENT:ShootTimed(pOwner, vecVelocity, flTime)
 
 	self:SetLocalAngularVelocity(Angle(math.random( -200, 200 ), math.random( 400, 500 ), math.random( -100, 100 )))
 	
-	local svgravity = cvars.Number("sv_gravity", 800)
-	if svgravity != 0 then
-		local gravityMul = 400 / svgravity
-		self:SetGravity(gravityMul)
-	end
+	self:SetCorrectGravity()
 	self:SetFriction(0.8)
 	
 	self.dmg = cvars.Number("hl1_sk_plr_dmg_grenade", 100)

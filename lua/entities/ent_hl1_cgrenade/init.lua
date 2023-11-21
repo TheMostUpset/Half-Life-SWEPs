@@ -12,11 +12,7 @@ function ENT:Initialize()
 	self:SetModel(self.Model)
 	self:SetCollisionBounds(mins, maxs)
 	
-	local svgravity = cvars.Number("sv_gravity", 800)
-	if svgravity != 0 then
-		local gravityMul = 400 / svgravity
-		self:SetGravity(gravityMul)
-	end
+	self:SetCorrectGravity()
 
 	self.dmg = cvars.Number("hl1_sk_plr_dmg_mp5_grenade", 100)
 	

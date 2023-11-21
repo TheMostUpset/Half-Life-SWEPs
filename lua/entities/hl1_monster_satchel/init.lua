@@ -13,11 +13,7 @@ function ENT:Initialize()
 	
 	self:NextThink(CurTime() + .1)
 	
-	local svgravity = cvars.Number("sv_gravity", 800)
-	if svgravity != 0 then
-		local gravityMul = 400 / svgravity
-		self:SetGravity(gravityMul)
-	end
+	self:SetCorrectGravity()
 	self:SetFriction(0.8)
 	self.dmg = cvars.Number("hl1_sk_plr_dmg_satchel", 150)
 	self.m_flNextBounceSoundTime = 0

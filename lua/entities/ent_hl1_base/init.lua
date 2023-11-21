@@ -103,3 +103,20 @@ function ENT:SUB_Remove()
 
 	self:Remove()
 end
+
+function ENT:GetOwnerGravity()
+	local owner = self:GetOwner()
+	local ownerGravity = 1
+	if IsValid(owner) then
+		ownerGravity = owner:GetGravity()
+	end
+	return ownerGravity
+end
+
+function ENT:SetCorrectGravity()
+	local svgravity = cvars.Number("sv_gravity", 800)
+	if svgravity != 0 then
+		local gravityMul = 400 / svgravity * self:GetOwnerGravity()
+		self:SetGravity(gravityMul)
+	end
+end
