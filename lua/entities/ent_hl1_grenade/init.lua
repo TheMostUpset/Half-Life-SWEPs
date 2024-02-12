@@ -129,7 +129,13 @@ function ENT:Think()
 	self:NextThink(CurTime() + .1)
 	
 	if self.dmgtime - 1 < CurTime() then
-		self:InsertSound(8, self:GetPos() + self:GetVelocity() * (self.dmgtime - CurTime()), 400, 0.1)
+		local aiSndPos = self:GetPos() + self:GetVelocity() * (self.dmgtime - CurTime())
+		if IsValid(self.aiSnd) then
+			self.aiSnd:SetPos(aiSndPos)
+			self.aiSnd:Fire("EmitAISound")
+		else
+			self.aiSnd = self:InsertSound(8, aiSndPos, 400, 0.1)
+		end
 	end
 	
 	if self.dmgtime <= CurTime() then
