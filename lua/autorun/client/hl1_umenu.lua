@@ -56,6 +56,9 @@ local function HL1_SettingsPanel(DForm)
 	if game.SinglePlayer() then
 		DForm:CheckBox("Multiplayer rules in singleplayer", "hl1_sv_mprules")
 		DForm:ControlHelp("e.g. gauss jumping, colt zoom, explosive bolts")
+	else
+		-- DForm:CheckBox("Singleplayer rules in multiplayer", "hl1_sv_sprules")
+		-- DForm:ControlHelp("no gauss jumping, no colt zoom, normal bolts")
 	end
 	DForm:CheckBox("Gauss trace backwards", "hl1_sv_gauss_tracebackwards")
 	DForm:ControlHelp("tired of killing yourself? disable this!")
@@ -88,16 +91,16 @@ local function HL1_SettingsPanel(DForm)
 	DForm:NumSlider("rollspeed", "hl1_cl_rollspeed", 100, 800, 0)
 	local defaultBob = DForm:Button("Default Bob Values")
 	defaultBob.DoClick = function()
-		for k, v in pairs(defaultbobvalues) do
+		for k, v in ipairs(defaultbobvalues) do
 			RunConsoleCommand(v[1], v[2])
 		end
 	end
 	local defaultAll = DForm:Button("Default All")
 	defaultAll.DoClick = function()
-		for k, v in pairs(defaultvalues) do
+		for k, v in ipairs(defaultvalues) do
 			RunConsoleCommand(v[1], v[2])
 		end
-		for k, v in pairs(defaultbobvalues) do
+		for k, v in ipairs(defaultbobvalues) do
 			RunConsoleCommand(v[1], v[2])
 		end
 	end
@@ -106,7 +109,7 @@ end
 local function HL1_DamageSettingsPanel(DForm)
 	DForm:Help("These values will NOT be saved in your config\nPlease add needed convars in skill.cfg (hl1_sk_plr_dmg_*)")
 	local t = {}
-	for k, v in pairs(defaultdmgvalues) do
+	for k, v in ipairs(defaultdmgvalues) do
 		local a, b = DForm:NumberWang(v[1], v[2], 0, 999, 0)
 		a:SetValue(cvars.Number(v[2], v[3]))
 		a:SetHeight(30)
@@ -115,8 +118,8 @@ local function HL1_DamageSettingsPanel(DForm)
 	end
 	local defaultDmg = DForm:Button("Default")
 	defaultDmg.DoClick = function()
-		for k, v in pairs(defaultdmgvalues) do
-			RunConsoleCommand(v[2], v[3])
+		for k, v in ipairs(defaultdmgvalues) do
+			RunConsoleCommand(v[2], tostring(v[3]))
 			t[k]:SetValue(v[3])
 		end
 	end
