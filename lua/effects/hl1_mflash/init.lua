@@ -61,7 +61,7 @@ function EFFECT:Init(data)
 	local pos = self:GetMuzzleFlashPos(self.Position, self.WeaponEnt, self.Attachment)
 	local emitter = ParticleEmitter(pos)
 	
-	if cvar_muzzle:GetBool() then
+	if !cvar_muzzle or cvar_muzzle:GetBool() then
 		self.particle = {}
 	
 		for i = 0, math.random(0,1) do
@@ -78,7 +78,7 @@ function EFFECT:Init(data)
 		end
 	end
 
-	if cvar_smoke:GetBool() then
+	if !cvar_smoke or cvar_smoke:GetBool() then
 		for i = 1, 4 do
 			local smokecol = math.random(40, 170)
 			local smoke = emitter:Add("particle/particle_smokegrenade", pos)
@@ -98,7 +98,7 @@ function EFFECT:Init(data)
 
 	emitter:Finish()
 	
-	if cvar_light:GetBool() then
+	if !cvar_light or cvar_light:GetBool() then
 		local dynlight = DynamicLight(self:EntIndex())
 		dynlight.Pos = pos
 		dynlight.Size = 75

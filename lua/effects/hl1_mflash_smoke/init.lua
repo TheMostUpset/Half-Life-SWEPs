@@ -26,7 +26,7 @@ function EFFECT:GetMuzzleFlashPos( Position, Ent, Attachment )
 end
 
 function EFFECT:Init(data)
-	if !cvar_smoke:GetBool() then return end
+	if cvar_smoke and !cvar_smoke:GetBool() then return end
 	
 	self.Position = data:GetOrigin()
 	self.WeaponEnt = data:GetEntity()
