@@ -37,6 +37,7 @@ SWEP.ReloadTime = 2
 
 SWEP.Primary.Damage			= 40
 SWEP.Primary.DamageCVar		= "hl1_sk_plr_dmg_357_bullet"
+SWEP.Primary.BulletForce	= 1
 SWEP.Primary.Recoil			= -10
 SWEP.Primary.Cone			= .01
 SWEP.Primary.Delay			= 0.75

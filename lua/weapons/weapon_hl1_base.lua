@@ -43,7 +43,7 @@ if SERVER then
 		{"hl1_sk_plr_dmg_tripmine", 150},
 		{"hl1_sk_plr_dmg_satchel", 150}
 	}
-	for k, v in pairs(dmgCvars) do
+	for k, v in ipairs(dmgCvars) do
 		CreateConVar(v[1], v[2], FCVAR_NOTIFY)
 	end
 	CreateConVar("hl1_sv_itemrespawntime", 23, FCVAR_NOTIFY, "Respawn time for items in Deathmatch", 0)
@@ -146,6 +146,7 @@ cvars.AddChangeCallback("hl1_sv_cmodels", function(name, value_old, value_new)
 end)
 
 local cvar_clampammo = CreateConVar("hl1_sv_clampammo", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Enable max ammo limit for HL weapons", 0, 1)
+-- local cvar_sprules = CreateConVar("hl1_sv_sprules", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Singleplayer rules in multiplayer", 0, 1)
 local cvar_unlimitedclip = CreateConVar("hl1_sv_unlimitedclip", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Unlimited clip for HL weapons", 0, 1)
 local cvar_unlimitedammo = CreateConVar("hl1_sv_unlimitedammo", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Unlimited ammo for HL weapons", 0, 1)
 
@@ -730,15 +731,19 @@ function SWEP:ShootBullet(damage, num_bullets, aimcone)
 	bullet.Dir 		= dir
 	bullet.Spread 	= aimcone
 	bullet.Tracer	= 3
-	bullet.Force	= 4
+	bullet.Force	= self.Primary.BulletForce or 4
 	bullet.Damage	= damage
-	bullet.AmmoType = "Pistol"
-	-- bullet.Callback = self.BulletCallback
+	bullet.AmmoType = self.Primary.Ammo
+	bullet.Callback = self.BulletCallback
 	
 	self.Owner:FireBullets(bullet)
 end
 
 function SWEP:BulletCallback(tr, dmginfo)
+	-- adds DMG_NEVERGIB to every bullet damage
+	if dmginfo:GetDamage() < 200 then
+		dmginfo:SetDamageType(bit.bor(dmginfo:GetDamageType(), DMG_NEVERGIB))
+	end
 end
 
 function SWEP:SendRecoil(angle)
