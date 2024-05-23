@@ -22,7 +22,12 @@ local resizedMaps = {
 	["hls14amrl"] = true,
 	["hls14bmrl"] = true,
 	["hls14cmrl"] = true,
-	["hls_hc"] = true
+	["hls_hc"] = true,
+	-- uplink extended
+	["uplinkext1"] = true,
+	["uplinkext2"] = true,
+	["uplinkext3"] = true,
+	["uplinkext4"] = true
 }
 
 function HL1_IsResizedMap(map)
@@ -32,12 +37,18 @@ end
 
 if engine.ActiveGamemode() != "sandbox" then return end
 
-if HL1_IsResizedMap() then	
+if HL1_IsResizedMap() then
+	-- creating non-existing ents first, so we'll be able to replace them later
 	local baseEnt = {Base = "base_entity", IsHL1Replacement = true}
-	scripted_ents.Register(baseEnt, "weapon_mp5")
-	scripted_ents.Register(baseEnt, "weapon_9mmar")
-	scripted_ents.Register(baseEnt, "weapon_9mmhandgun")
-	scripted_ents.Register(baseEnt, "weapon_glock")
+	local dummyEnts = {
+		"weapon_mp5",
+		"weapon_9mmar",
+		"weapon_9mmhandgun",
+		"weapon_glock"
+	}
+	for k, v in ipairs(dummyEnts) do
+		scripted_ents.Register(baseEnt, v)
+	end
 	--[[local entTable_hls = {
 		["weapon_crowbar"] = "weapon_crowbar_hl1",
 		["weapon_glock"] = "weapon_glock_hl1",
@@ -56,6 +67,7 @@ if HL1_IsResizedMap() then
 		["weapon_357"] = "weapon_hl1_357",
 		["weapon_357_hl1"] = "weapon_hl1_357",
 		["weapon_9mmAR"] = "weapon_hl1_mp5",
+		["weapon_9mmar"] = "weapon_hl1_mp5",
 		["weapon_mp5"] = "weapon_hl1_mp5",
 		["weapon_mp5_hl1"] = "weapon_hl1_mp5",
 		["weapon_shotgun"] = "weapon_hl1_shotgun",
@@ -108,6 +120,7 @@ if HL1_IsResizedMap() then
 		["weapon_rpg"] = "weapon_hl1_snark",
 		["weapon_smg1"] = "weapon_hl1_hornetgun",
 		["weapon_9mmar"] = "weapon_hl1_mp5",
+		["weapon_9mmAR"] = "weapon_hl1_mp5",
 		["weapon_9mmhandgun"] = "weapon_hl1_glock",
 		["item_battery"] = "hl1_item_battery",
 		["item_healthkit"] = "hl1_item_battery",
