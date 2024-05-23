@@ -6,7 +6,7 @@ util.AddNetworkString("HL1_HUDPickupMessage")
 
 function ENT:Initialize()
 	if !self:IsInWorld() then
-		print(self:GetClass().." is not in world, removing!")
+		print(self:GetClass().." is not in world, removing!", self:GetPos())
 		self:Remove()
 	end
 	self:SetModel(self.Model)
