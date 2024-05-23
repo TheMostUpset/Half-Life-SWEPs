@@ -135,6 +135,7 @@ else
 	CreateClientConVar("hl1_cl_firelight", 1, true, false, "Dynamic light from muzzle flash and explosion")
 	CreateClientConVar("hl1_cl_muzzleflash", 1, true, false, "Muzzle flash effect")
 	CreateClientConVar("hl1_cl_muzzlesmoke", 1, true, false, "Muzzle smoke effect")
+	CreateClientConVar("hl1_cl_ejectshells", 1, true, false, "Eject shells")
 	
 end
 
@@ -772,6 +773,7 @@ function SWEP:SendRecoil(angle)
 	end
 end
 
+local cvar_ejectshells = GetConVar("hl1_cl_ejectshells")
 local shellType = {
 	[1] = "ShotgunShellEject",
 	[2] = "RifleShellEject",
@@ -781,6 +783,8 @@ function SWEP:EjectShell(ent, iType, flip, pos)
 	iType = shellType[iType] or "ShellEject"
 	
 	if !IsFirstTimePredicted() or !IsValid(ent) then return end
+	
+	if CLIENT and cvar_ejectshells and !cvar_ejectshells:GetBool() then return end
 
 	local angShellAngles = ent:EyeAngles()
 	if SERVER or CLIENT and ent:ShouldDrawLocalPlayer() then

@@ -13,6 +13,7 @@ local defaultvalues = {
 	{"hl1_cl_firelight", 1},
 	{"hl1_cl_muzzleflash", 1},
 	{"hl1_cl_muzzlesmoke", 1},
+	{"hl1_cl_ejectshells", 1},
 	{"hl1_cl_crosshair", 1},
 	{"hl1_cl_crosshair_scale", 1},
 	{"hl1_cl_crosshair_gsrchud", 1},
@@ -73,6 +74,9 @@ local function HL1_SettingsPanel(DForm)
 	DForm:CheckBox("Fire lighting", "hl1_cl_firelight")
 	DForm:CheckBox("Muzzle flash", "hl1_cl_muzzleflash")
 	DForm:CheckBox("Muzzle smoke", "hl1_cl_muzzlesmoke")
+	if !game.SinglePlayer() then
+		DForm:CheckBox("Eject shells", "hl1_cl_ejectshells")
+	end
 	DForm:CheckBox("Crosshair", "hl1_cl_crosshair")
 	if GSRCHUD then
 		DForm:CheckBox("Crosshair color uses GSRCHUD theme", "hl1_cl_crosshair_gsrchud")
@@ -92,16 +96,16 @@ local function HL1_SettingsPanel(DForm)
 	local defaultBob = DForm:Button("Default Bob Values")
 	defaultBob.DoClick = function()
 		for k, v in ipairs(defaultbobvalues) do
-			RunConsoleCommand(v[1], v[2])
+			RunConsoleCommand(v[1], tostring(v[2]))
 		end
 	end
 	local defaultAll = DForm:Button("Default All")
 	defaultAll.DoClick = function()
 		for k, v in ipairs(defaultvalues) do
-			RunConsoleCommand(v[1], v[2])
+			RunConsoleCommand(v[1], tostring(v[2]))
 		end
 		for k, v in ipairs(defaultbobvalues) do
-			RunConsoleCommand(v[1], v[2])
+			RunConsoleCommand(v[1], tostring(v[2]))
 		end
 	end
 end
