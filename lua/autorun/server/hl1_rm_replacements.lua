@@ -86,6 +86,7 @@ if HL1_IsResizedMap() then
 		["item_healthkit"] = "hl1_item_healthkit",
 		["item_battery"] = "hl1_item_battery",
 		["ammo_9mmar"] = "hl1_ammo_9mmar",
+		["ammo_9mmAR"] = "hl1_ammo_9mmar",
 		["ammo_9mmbox"] = "hl1_ammo_9mmbox",
 		["ammo_9mmclip"] = "hl1_ammo_9mmclip",
 		["ammo_357"] = "hl1_ammo_357",
@@ -125,6 +126,7 @@ if HL1_IsResizedMap() then
 		["item_battery"] = "hl1_item_battery",
 		["item_healthkit"] = "hl1_item_battery",
 		["ammo_9mmar"] = "hl1_ammo_9mmar",
+		["ammo_9mmAR"] = "hl1_ammo_9mmar",
 		["ammo_9mmbox"] = "hl1_ammo_9mmbox",
 		["ammo_9mmclip"] = "hl1_ammo_9mmclip",
 		["ammo_357"] = "hl1_ammo_357",
@@ -143,7 +145,7 @@ if HL1_IsResizedMap() then
 			table.Add(breakables, ents.FindByClass("func_pushable"))
 			table.Add(breakables, ents.FindByClass("func_physbox"))
 			for k, v in pairs(breakables) do
-				local repl = replaceEntsInBoxes[v:GetSaveTable().m_iszSpawnObject]
+				local repl = replaceEntsInBoxes[v:GetInternalVariable("m_iszSpawnObject")]
 				if repl then
 					v:SetSaveValue("m_iszSpawnObject", repl)
 				end
