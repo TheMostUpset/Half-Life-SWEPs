@@ -10,8 +10,17 @@ function ENT:IsScreenShakeEnabled()
 	return cvars.Bool("hl1_sv_explosionshake")
 end
 
+function ENT:IsCreature(ent)
+	return ent:IsPlayer() or ent:IsNPC() or ent:IsNextBot()
+end
+
 function ENT:TraceFilter()
-	return hl1_coop_sv_friendlyfire and !hl1_coop_sv_friendlyfire:GetBool() and player.GetAll() or {self, self.Owner}
+	local t = {self, self.Owner}
+	if hl1_coop_sv_friendlyfire and !hl1_coop_sv_friendlyfire:GetBool() then
+		t = player.GetAll()
+		table.insert(t, self)
+	end
+	return t
 end
 
 function ENT:ImpactEffect(tr)
