@@ -142,10 +142,10 @@ function SWEP:PrimaryAttack()
 			if IsValid(pRocket) then
 				pRocket:SetPos(vecSrc)
 				pRocket:SetAngles(ang)
+				pRocket:SetOwner(self.Owner)
 				pRocket:Spawn()
 				pRocket.pLauncher = self
 				//pRocket.pLauncher.m_cActiveRockets = m_cActiveRockets + 1
-				pRocket:SetOwner(self.Owner)
 				pRocket:SetLocalVelocity(pRocket:GetVelocity() + self.Owner:GetForward() * self.Owner:GetVelocity():Dot(self.Owner:GetForward()))
 			end
 		end
