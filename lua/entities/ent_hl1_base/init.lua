@@ -106,11 +106,10 @@ end
 
 function ENT:GetOwnerGravity()
 	local owner = self:GetOwner()
-	local ownerGravity = 1
-	if IsValid(owner) then
-		ownerGravity = owner:GetGravity()
+	if IsValid(owner) and owner:IsPlayer() and owner:GetGravity() > 0 then
+		return owner:GetGravity()
 	end
-	return ownerGravity
+	return 1
 end
 
 function ENT:SetCorrectGravity()
