@@ -3,6 +3,7 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 ENT.Model			= Model("models/rpgrocket.mdl")
+ENT.StartTime		= .4 -- time for 'ignite' when the rocket actually fires
 ENT.Trail			= "hl1/sprites/smoke.vmt"
 ENT.TrailLifeTime	= 4
 ENT.Sprite			= "sprites/animglow01.vmt"
@@ -23,7 +24,7 @@ function ENT:Initialize()
 	self:SetLocalVelocity(vecFwd * 250)
 	self:SetCorrectGravity()
 
-	self:NextThink(CurTime() + .4)
+	self:NextThink(CurTime() + self.StartTime)
 	
 	self.dmg = cvars.Number("hl1_sk_plr_dmg_rpg", 100)
 	self.radius = self.dmg * 2.5
