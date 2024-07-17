@@ -1,0 +1,17 @@
+"VertexLitGeneric"
+{
+	"$color2" "[.1 .15 0]"
+	"$envmap" "models/hl1_fixedenv/v_satchel/buckleCHROME"
+	"$envmapmode" 1
+
+	// requred to see specular on dx6+7 at all
+	"$multipass" 1
+	
+	"Proxies"
+	{
+		"HL1Chrome"
+		{
+			"resultVar" "$envmaptint"
+		}
+	}
+}

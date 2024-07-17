@@ -23,7 +23,7 @@ SWEP.PlayerModel		= Model("models/hl1/p_9mmhandgun.mdl")
 SWEP.EntModel			= Model("models/w_9mmhandgun.mdl")
 
 SWEP.CModel				= Model("models/hl1/c_9mmhandgun.mdl")
-SWEP.VModel				= Model("models/v_9mmhandgun.mdl")
+SWEP.VModel				= Model("models/hl1/v_9mmhandgun.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel

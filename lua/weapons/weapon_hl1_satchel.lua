@@ -20,8 +20,8 @@ SWEP.Spawnable			= true
 
 SWEP.CModelSatchel		= Model("models/hl1/c_satchel.mdl")
 SWEP.CModelRadio		= Model("models/hl1/c_satchel_radio.mdl")
-SWEP.VModelSatchel		= Model("models/v_satchel.mdl")
-SWEP.VModelRadio		= Model("models/v_satchel_radio.mdl")
+SWEP.VModelSatchel		= Model("models/hl1/v_satchel.mdl")
+SWEP.VModelRadio		= Model("models/hl1/v_satchel_radio.mdl")
 
 SWEP.ModelSatchelView	= SWEP.CModelSatchel
 SWEP.ModelRadioView		= SWEP.CModelRadio

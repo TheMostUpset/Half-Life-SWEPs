@@ -8,6 +8,42 @@ if CLIENT then
 	SWEP.HideWhenEmpty		= true
 	SWEP.WepSelectIcon		= surface.GetTextureID("hl1/icons/snark")
 	SWEP.WorldModelSequence = 1
+	
+	local fTime = 0
+	local blinkSpeed = 24
+	local blinkDelay = 60
+	local function MatProxy(ent)
+		if !IsValid(ent) then return end
+		local owner = ent:GetOwner()
+		if !IsValid(owner) or !owner:IsPlayer() then return end
+		
+		local weapon = owner:GetActiveWeapon()
+		if !weapon or !IsValid(weapon) then return end
+
+		fTime = (fTime + FrameTime() * blinkSpeed) % blinkDelay
+		local frame = math.floor(fTime)
+		if frame == 3 then
+			frame = 1
+			blinkDelay = math.random(30, 200)
+		elseif frame > 3 then
+			frame = 0
+		end
+		
+		return frame
+	end
+
+	matproxy.Add(
+	{
+		name = "HL1SnarkEyeBlink",		
+		init = function(self, mat, values)
+			self.ResultTo = values.resultvar
+		end,		
+		bind = function(self, mat, ent)
+			local frame = MatProxy(ent)
+			if !frame then return end
+			mat:SetInt(self.ResultTo, frame)
+		end
+	})
 
 end
 
@@ -22,7 +58,7 @@ SWEP.PlayerModel		= Model("models/hl1/p_squeak.mdl")
 SWEP.EntModel			= Model("models/w_sqknest.mdl")
 
 SWEP.CModel				= Model("models/hl1/c_squeak.mdl")
-SWEP.VModel				= Model("models/v_squeak.mdl")
+SWEP.VModel				= Model("models/hl1/v_squeak.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel

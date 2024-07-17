@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/v_squeak/SQK_Eye1"
+	"Proxies"
+	{
+		"HL1SnarkEyeBlink"
+		{
+			"resultVar" "$frame"
+		}
+	}
+}

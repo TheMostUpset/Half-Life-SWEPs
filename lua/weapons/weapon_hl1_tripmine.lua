@@ -20,7 +20,7 @@ SWEP.PlayerModel		= Model("models/hl1/p_tripmine.mdl")
 SWEP.EntModel			= Model("models/w_tripmine.mdl")
 
 SWEP.CModel				= Model("models/hl1/c_tripmine.mdl")
-SWEP.VModel				= Model("models/v_tripmine.mdl")
+SWEP.VModel				= Model("models/hl1/v_tripmine.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel

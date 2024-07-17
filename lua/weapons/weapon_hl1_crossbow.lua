@@ -54,7 +54,7 @@ SWEP.PlayerModel		= Model("models/hl1/p_crossbow.mdl")
 SWEP.EntModel			= Model("models/w_crossbow.mdl")
 
 SWEP.CModel				= Model("models/hl1/c_crossbow.mdl")
-SWEP.VModel				= Model("models/v_crossbow.mdl")
+SWEP.VModel				= Model("models/hl1/v_crossbow.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel

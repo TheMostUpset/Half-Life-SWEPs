@@ -1,0 +1,17 @@
+"VertexLitGeneric"
+{
+	"$color2" "[.15 .2 .3]"
+	"$envmap" "models/hl1_fixedenv/v_tripmine/lensCHROME"
+	"$envmapmode" 1
+
+	// requred to see specular on dx6+7 at all
+	"$multipass" 1
+	
+	"Proxies"
+	{
+		"HL1Chrome"
+		{
+			"resultVar" "$envmaptint"
+		}
+	}
+}

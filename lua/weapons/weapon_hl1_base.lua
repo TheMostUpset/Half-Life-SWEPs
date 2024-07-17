@@ -137,6 +137,33 @@ else
 	CreateClientConVar("hl1_cl_muzzlesmoke", 1, true, false, "Muzzle smoke effect")
 	CreateClientConVar("hl1_cl_ejectshells", 1, true, false, "Eject shells")
 	
+	local function ChromeFixProxy(ent)
+		if !IsValid(ent) then return end
+
+		local lightCol = render.GetLightColor(ent:GetPos() + Vector(0,0,2))
+		local hdrScale = render.GetToneMappingScaleLinear()
+		if hdrScale[1] != 1 then -- checking for HDR
+			lightCol = lightCol * 1.75 + hdrScale / 28
+		else
+			lightCol = lightCol * 2
+		end
+		
+		return lightCol
+	end
+
+	matproxy.Add(
+	{
+		name = "HL1Chrome",		
+		init = function(self, mat, values)
+			self.ResultTo = values.resultvar
+		end,		
+		bind = function(self, mat, ent)
+			local col = ChromeFixProxy(ent)
+			if !col then return end
+			mat:SetVector(self.ResultTo, col)
+		end
+	})
+	
 end
 
 local cvar_cmodels = CreateConVar("hl1_sv_cmodels", 1, {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Enable c_ models for HL weapons")
@@ -949,7 +976,7 @@ local cvar_chair_col
 if GSRCHUD then
 	cvar_chair_col = CreateClientConVar("hl1_cl_crosshair_gsrchud", 1, true, false, "Use GSRCHUD theme color for crosshair")
 end
-local cvar_fixchrome = CreateClientConVar("hl1_cl_fixchrome", 1, true, false, "Fix chrome envmap lighting")
+-- local cvar_fixchrome = CreateClientConVar("hl1_cl_fixchrome", 1, true, false, "Fix chrome envmap lighting")
 local cvar_hl2bob = CreateClientConVar("hl1_cl_hl2bob", 0, true, false, "Default HL2 (HL:S) bobbing")
 local cvar_vmfov = CreateClientConVar("hl1_cl_viewmodelfov", 90, true, false, "Viewmodel FOV for HL weapons")
 
@@ -1257,15 +1284,15 @@ function SWEP:HideMagBone(b)
 	end
 end
 
-function SWEP:PostDrawViewModel(vm, wep, ply)
+--[[function SWEP:PostDrawViewModel(vm, wep, ply)
 	if cvar_fixchrome:GetBool() then
 		local lightCol = render.GetLightColor(vm:GetPos() + Vector(0,0,2))
 		local hdrScale = render.GetToneMappingScaleLinear()
 		if hdrScale[1] != 1 then -- checking for HDR
-			--[[lightCol = (lightCol[1] + lightCol[2] + lightCol[3]) / 3
-			lightCol = lightCol / 2 + .02
-			lightCol = math.min(lightCol, .3)
-			lightCol = Vector(lightCol, lightCol, lightCol)]]
+			-- lightCol = (lightCol[1] + lightCol[2] + lightCol[3]) / 3
+			-- lightCol = lightCol / 2 + .02
+			-- lightCol = math.min(lightCol, .3)
+			-- lightCol = Vector(lightCol, lightCol, lightCol)
 			lightCol = lightCol * 1.75 + hdrScale / 28
 		else
 			lightCol = lightCol * 2
@@ -1291,7 +1318,7 @@ function SWEP:PostDrawViewModel(vm, wep, ply)
 			end
 		end
 	end
-end
+end]]
 
 if game.SinglePlayer() then
 	net.Receive("HL1punchangle", function()

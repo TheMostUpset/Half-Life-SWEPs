@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$color2" "[.25 .25 .25]"
+	"$envmap" "models/hl1_fixedenv/v_hkmp5-sd/HK_chrome"
+	
+	"Proxies"
+	{
+		"HL1Chrome"
+		{
+			"resultVar" "$envmaptint"
+		}
+	}
+}
