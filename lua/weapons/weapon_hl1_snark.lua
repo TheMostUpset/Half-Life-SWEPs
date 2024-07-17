@@ -21,7 +21,7 @@ SWEP.Spawnable			= true
 SWEP.PlayerModel		= Model("models/hl1/p_squeak.mdl")
 SWEP.EntModel			= Model("models/w_sqknest.mdl")
 
-SWEP.CModel				= Model("models/weapons/c_hl_squeak.mdl")
+SWEP.CModel				= Model("models/hl1/c_squeak.mdl")
 SWEP.VModel				= Model("models/v_squeak.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
