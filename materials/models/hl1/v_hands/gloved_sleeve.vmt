@@ -1,4 +1,4 @@
 "VertexLitGeneric"
 {
-	"$baseTexture" "models/v_python/GLOVED_sleeve"
+	"$baseTexture" "models/hl1/v_hands/gloved_sleeve"
 }

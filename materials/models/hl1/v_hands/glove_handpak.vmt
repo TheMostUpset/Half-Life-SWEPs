@@ -1,4 +1,4 @@
 "VertexLitGeneric"
 {
-	"$baseTexture" "models/v_chub/GLOVE_handpak"
+	"$baseTexture" "models/hl1/v_hands/GLOVE_handpak"
 }

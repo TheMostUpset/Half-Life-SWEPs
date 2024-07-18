@@ -1,4 +1,4 @@
 "VertexLitGeneric"
 {
-	"$baseTexture" "models/v_hkmp5-sd/PLAYER_ForeArm1"
+	"$baseTexture" "models/hl1/v_hands/PLAYER_ForeArm1"
 }
