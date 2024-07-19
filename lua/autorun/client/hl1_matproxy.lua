@@ -23,7 +23,7 @@ matproxy.Add(
 		mat:SetVector(self.ResultTo, col)
 	end
 })
-	
+
 local fTime = 0
 local blinkSpeed = 24
 local blinkDelay = 60
@@ -56,5 +56,36 @@ matproxy.Add(
 		local frame = SnarkEyeProxy(ent)
 		if !frame then return end
 		mat:SetInt(self.ResultTo, frame)
+	end
+})
+
+local function GaussGlowProxy(ent)
+	if !IsValid(ent) then return end
+	local owner = ent:GetOwner()
+	if !IsValid(owner) or !owner:IsPlayer() then return end	
+	if !ent:IsWeapon() then
+		ent = owner:GetActiveWeapon()
+	end	
+	if !IsValid(ent) or !ent.GetInAttack then return end
+	
+	local idleCol = Vector(.5,.5,.5)
+
+	local col = idleCol * (math.sin(CurTime() * 5) * .1 + 1)
+	if ent:GetInAttack() > 0 then
+		local charge = math.abs(ent:GetStartCharge() - CurTime()) / ent:GetFullChargeTime()
+		col = idleCol + Vector(1,1,1) * charge
+	end	
+	return col
+end
+matproxy.Add(
+{
+	name = "HL1GaussGlow",
+	init = function(self, mat, values)
+		self.ResultTo = values.resultvar
+	end,		
+	bind = function(self, mat, ent)
+		local col = GaussGlowProxy(ent)
+		if !col then return end
+		mat:SetVector(self.ResultTo, col)
 	end
 })
