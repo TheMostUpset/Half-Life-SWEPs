@@ -263,6 +263,9 @@ function SWEP:Initialize()
 	local owner = self:GetOwner()
 	if !owner or !IsValid(owner) or self:CreatedFromBreakable() then
 		if self.EntModel then
+			if self:IsHDEnabled() then
+				self:ApplyHDEntModel()
+			end
 			self.WorldModel = self.EntModel
 			self:SetModel(self.WorldModel)
 		end
@@ -300,6 +303,13 @@ function SWEP:Initialize()
 	self:SetHoldType(self.HoldType)
 	self:SpecialInit()
 	self:ApplyViewModel()
+	if self:IsHDEnabled() then
+		self:ApplyHDPlayerModel()
+	end
+end
+
+function SWEP:IsHDEnabled()
+	return cvar_hdmodels and cvar_hdmodels:GetBool()
 end
 
 function SWEP:ApplyViewModel()
@@ -335,21 +345,50 @@ function SWEP:ApplyViewModel()
 		self.UseHands = false
 	end
 
-	if cvar_hdmodels and cvar_hdmodels:GetBool() then
-		if string.find(self.ViewModel, "/hl1/c_") or string.find(self.ViewModel, "/hl1/v_") then
-			local hdVMdl = string.gsub(self.ViewModel, "/hl1/", "/hl1/hd/")
-			if self.ViewModel != hdVMdl and util.IsValidModel(hdVMdl) then
+	if self:IsHDEnabled() then
+		self:ApplyHDViewModel()
+	end
+end
+
+function SWEP:ApplyHDViewModel()
+	if string.find(self.ViewModel, "/hl1/c_") or string.find(self.ViewModel, "/hl1/v_") then
+		local hdVMdl = string.gsub(self.ViewModel, "/hl1/", "/hl1/hd/")
+		if self.ViewModel != hdVMdl then
+			if util.IsValidModel(hdVMdl) then
 				self.ViewModel = hdVMdl
-			end
-			local hdWMdl = string.gsub(self.WorldModel, "/hl1/", "/hl1/hd/")
-			if self.WorldModel != hdWMdl and util.IsValidModel(hdWMdl) then
-				self.WorldModel = hdWMdl
+			else
+				-- try fallback to v_ model (for hgun and gauss)
+				local hdVMdl = string.gsub(self.ViewModel, "/hl1/c_", "/hl1/hd/v_")
+				if util.IsValidModel(hdVMdl) then
+					self.ViewModel = hdVMdl
+					self.UseHands = false
+				end
 			end
 		end
-	-- else
-		-- if string.find(self.ViewModel, "/hl1/hd/") then
-			-- self.ViewModel = string.gsub(self.ViewModel, "/hl1/hd/", "/hl1/")
-		-- end
+	end
+end
+
+-- function SWEP:ApplySDViewModel()
+	-- if string.find(self.ViewModel, "/hl1/hd/") then
+		-- self.ViewModel = string.gsub(self.ViewModel, "/hl1/hd/", "/hl1/")
+	-- end
+-- end
+
+function SWEP:ApplyHDEntModel()
+	if string.find(self.EntModel, "models/w_") then
+		local hdWMdl = string.gsub(self.EntModel, "models/w_", "models/hl1/hd/w_")
+		if self.EntModel != hdWMdl and util.IsValidModel(hdWMdl) then
+			self.EntModel = hdWMdl
+		end
+	end
+end
+	
+function SWEP:ApplyHDPlayerModel()
+	if string.find(self.PlayerModel, "/hl1/p_") then
+		local hdWMdl = string.gsub(self.PlayerModel, "/hl1/", "/hl1/hd/")
+		if self.PlayerModel != hdWMdl and util.IsValidModel(hdWMdl) then
+			self.PlayerModel = hdWMdl
+		end
 	end
 end
 
@@ -730,6 +769,11 @@ function SWEP:WeaponSound(snd, lvl, pitch)
 	end
 end
 
+function SWEP:WeaponSoundHD(snd, lvl, pitch)
+	local snd = self.Primary.SoundHD or self.PrimarySoundsHD[math.random(1, #self.PrimarySoundsHD)]
+	self:WeaponSound(snd, lvl, pitch)
+end
+
 function SWEP:DoRicochetSound(pos)
 	if (!game.SinglePlayer() and CLIENT and IsFirstTimePredicted()) or game.SinglePlayer() then
 		sound.Play(self.RicochetSounds[math.random(1, 5)], pos, 80)
@@ -855,9 +899,10 @@ function SWEP:EjectShell(ent, iType, flip, pos)
 	util.Effect(iType, data)
 end
 
-function SWEP:HL1MuzzleFlash(att, scale)
+function SWEP:HL1MuzzleFlash(att, scale, effectName)
 	att = att or 1
 	scale = scale or self.MuzzleScale
+	effectName = effectName or self.MuzzleEffect
 
 	self.Owner:MuzzleFlash()
 	if !IsFirstTimePredicted() or !IsValid(self.Owner) or self.Owner:WaterLevel() >= 3 then return end
@@ -868,7 +913,7 @@ function SWEP:HL1MuzzleFlash(att, scale)
 	fx:SetStart(self.MuzzlePos)
 	fx:SetAttachment(att)
 	fx:SetScale(scale)
-	util.Effect(self.MuzzleEffect, fx)
+	util.Effect(effectName, fx)
 	if self.MuzzleSmoke then
 		util.Effect("hl1_mflash_smoke", fx)
 	end

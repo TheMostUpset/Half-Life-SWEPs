@@ -33,6 +33,12 @@ SWEP.PrimarySounds = {
 	Sound("weapons/hks3.wav")
 }
 
+SWEP.PrimarySoundsHD = {
+	Sound("weapons/hd/hks1.wav"),
+	Sound("weapons/hd/hks2.wav"),
+	Sound("weapons/hd/hks3.wav")
+}
+
 SWEP.ReloadTime = 1.5
 SWEP.UnloadTime = .7
 SWEP.MagBone = "Bone12"
@@ -82,9 +88,17 @@ function SWEP:PrimaryAttack()
 	end
 	self:ShootBullet(cvars.Number(self.Primary.DamageCVar, self.Primary.Damage), self.Primary.NumShots, self.Primary.Cone)
 	self:EjectShell(self.Owner, 0)
-	self:WeaponSound()
+	if self:IsHDEnabled() then
+		self:WeaponSoundHD()
+	else
+		self:WeaponSound()
+	end
 	self:TakeClipPrimary()
-	self:HL1MuzzleFlash()
+	if self:IsHDEnabled() then
+		self:HL1MuzzleFlash(nil, nil, "hl1_mflash_m4")
+	else
+		self:HL1MuzzleFlash()
+	end
 	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 	self.Owner:SetAnimation(PLAYER_ATTACK1)
 	self:SendRecoil()

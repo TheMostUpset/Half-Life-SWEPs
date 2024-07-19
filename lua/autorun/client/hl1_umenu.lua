@@ -5,6 +5,7 @@ local defaultvalues = {
 	{"hl1_sv_glock_extrabullet", 1},
 	{"hl1_sv_loadout", 0},
 	{"hl1_sv_cmodels", 1},
+	{"hl1_sv_hdmodels", 0},
 	{"hl1_sv_clampammo", 0},
 	{"hl1_sv_unlimitedammo", 0},
 	{"hl1_sv_unlimitedclip", 0},
@@ -54,6 +55,8 @@ local defaultdmgvalues = {
 local function HL1_SettingsPanel(DForm)
 	DForm:Help("Server")
 	DForm:CheckBox("Enable c_ models", "hl1_sv_cmodels")
+	DForm:ControlHelp("requires weapon re-equip to apply")
+	DForm:CheckBox("Enable HD models", "hl1_sv_hdmodels")
 	DForm:ControlHelp("requires weapon re-equip to apply")
 	if game.SinglePlayer() then
 		DForm:CheckBox("Multiplayer rules in singleplayer", "hl1_sv_mprules")

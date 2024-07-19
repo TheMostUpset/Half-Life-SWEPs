@@ -42,6 +42,7 @@ SWEP.ReloadSnds = {Sound("weapons/reload1.wav"), Sound("weapons/reload3.wav")}
 SWEP.AutoReload = false
 
 SWEP.Primary.Sound			= Sound("weapons/sbarrel1.wav")
+SWEP.Primary.SoundHD		= Sound("weapons/hd/sbarrel1.wav")
 SWEP.Primary.Damage			= 5
 SWEP.Primary.DamageCVar		= "hl1_sk_plr_dmg_buckshot"
 SWEP.Primary.Recoil			= -5
@@ -55,11 +56,15 @@ SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "buckshot"
 
 SWEP.Secondary.Sound		= Sound("weapons/dbarrel1.wav")
+SWEP.Secondary.SoundHD		= Sound("weapons/hd/dbarrel1.wav")
 SWEP.Secondary.Recoil		= -10
 SWEP.Secondary.NumShots		= 12
 SWEP.Secondary.Delay		= 1.5
 SWEP.Secondary.Automatic	= true
 SWEP.Secondary.Ammo			= "none"
+
+SWEP.SoundPump				= Sound("weapons/scock1.wav")
+SWEP.SoundPumpHD			= Sound("weapons/hd/scock1.wav")
 
 SWEP.MuzzleScale			= 2.5
 SWEP.MuzzleSmoke			= true
@@ -68,6 +73,12 @@ SWEP.MuzzlePos				= Vector(24, 1, 8)
 function SWEP:SpecialDT()
 	self:NetworkVar("Int", 1, "fInSpecialReload")
 	self:NetworkVar("Float", 2, "flPumpTime")
+end
+
+function SWEP:SpecialInit()
+	if self:IsHDEnabled() then
+		self.ViewModelOffset = nil
+	end
 end
 
 function SWEP:PrimaryAttack()
@@ -93,7 +104,11 @@ function SWEP:PrimaryAttack()
 		// regular old, untouched spread.
 		self:ShootBullet(cvars.Number(self.Primary.DamageCVar, self.Primary.Damage), self.Primary.NumShots, self.Primary.Cone)
 	end
-	self:WeaponSound(self.Primary.Sound)
+	if self:IsHDEnabled() then
+		self:WeaponSound(self.Primary.SoundHD)
+	else
+		self:WeaponSound(self.Primary.Sound)
+	end
 	self:TakeClipPrimary()
 	self:HL1MuzzleFlash()
 	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
@@ -139,7 +154,11 @@ function SWEP:SecondaryAttack()
 		// untouched default single player
 		self:ShootBullet(cvars.Number(self.Primary.DamageCVar, self.Primary.Damage), self.Secondary.NumShots, self.Primary.Cone)
 	end
-	self:WeaponSound(self.Secondary.Sound)
+	if self:IsHDEnabled() then
+		self:WeaponSound(self.Secondary.SoundHD)
+	else
+		self:WeaponSound(self.Secondary.Sound)
+	end
 	self:TakeClipPrimary(2)
 	self:HL1MuzzleFlash()
 	self:SendWeaponAnim(ACT_VM_SECONDARYATTACK)
@@ -213,7 +232,7 @@ function SWEP:SpecialThink()
 	local flPumpTime = self:GetflPumpTime()
 	if flPumpTime > 0 && flPumpTime < CurTime() then
 		// play pumping sound
-		self:EmitSound("weapons/scock1.wav", 85, 95 + math.random(0, 31), 1, CHAN_ITEM)
+		self:PlayPumpSound()
 		self:SetflPumpTime(0)
 	end
 	
@@ -229,7 +248,7 @@ function SWEP:SpecialThink()
 				self:SendWeaponAnim(ACT_SHOTGUN_PUMP)
 				
 				// play cocking sound
-				self:EmitSound("weapons/scock1.wav", 85, 95 + math.random(0, 31), 1, CHAN_ITEM)
+				self:PlayPumpSound()
 				self:SetfInSpecialReload(0)
 				self:SetWeaponIdleTime(CurTime() + 1.5)
 			end
@@ -253,6 +272,14 @@ function SWEP:ShotgunIdle()
 		self:SetWeaponIdleTime(CurTime() + 20.0/9.0)
 	end
 	self:SendWeaponAnim(iAnim)
+end
+
+function SWEP:PlayPumpSound()
+	local snd = self.SoundPump
+	if self:IsHDEnabled() then
+		snd = self.SoundPumpHD
+	end
+	self:EmitSound(snd, 85, 95 + math.random(0, 31), 1, CHAN_ITEM)
 end
 
 if SERVER then

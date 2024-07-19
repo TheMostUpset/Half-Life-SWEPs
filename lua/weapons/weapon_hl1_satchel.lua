@@ -111,6 +111,9 @@ function SWEP:Throw()
 		end
 		
 		self.ViewModel = self.ModelRadioView
+		if self:IsHDEnabled() then
+			self:ApplyHDViewModel()
+		end
 		local vm = self.Owner:GetViewModel()
 		vm:SetWeaponModel(self.ViewModel, self)
 		
@@ -128,6 +131,9 @@ end
 function SWEP:WeaponIdle()
 	if self:GetInAttack() == 2 then
 		self.ViewModel = self.ModelSatchelView
+		if self:IsHDEnabled() then
+			self:ApplyHDViewModel()
+		end
 		local vm = self.Owner:GetViewModel()
 		vm:SetWeaponModel(self.ViewModel, self)
 		self:SetInAttack(0)
@@ -158,5 +164,5 @@ end
 if SERVER then return end
 
 function SWEP:ViewModelHide(pos, ang, vm)
-	return IsValid(vm) and vm:GetModel() == self.ModelSatchelView and self:GetInAttack() != 1 and pos - ang:Forward() * 40 or pos
+	return IsValid(vm) and string.find(vm:GetModel(), "satchel.mdl") and self:GetInAttack() != 1 and pos - ang:Forward() * 40 or pos
 end
