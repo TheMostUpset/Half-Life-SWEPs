@@ -137,34 +137,9 @@ else
 	CreateClientConVar("hl1_cl_muzzlesmoke", 1, true, false, "Muzzle smoke effect")
 	CreateClientConVar("hl1_cl_ejectshells", 1, true, false, "Eject shells")
 	
-	local function ChromeFixProxy(ent)
-		if !IsValid(ent) then return end
-
-		local lightCol = render.GetLightColor(ent:GetPos() + Vector(0,0,2))
-		local hdrScale = render.GetToneMappingScaleLinear()
-		if hdrScale[1] != 1 then -- checking for HDR
-			lightCol = lightCol * 1.75 + hdrScale / 28
-		else
-			lightCol = lightCol * 2
-		end
-		
-		return lightCol
-	end
-
-	matproxy.Add(
-	{
-		name = "HL1Chrome",		
-		init = function(self, mat, values)
-			self.ResultTo = values.resultvar
-		end,		
-		bind = function(self, mat, ent)
-			local col = ChromeFixProxy(ent)
-			if !col then return end
-			mat:SetVector(self.ResultTo, col)
-		end
-	})
-	
 end
+
+local cvar_hdmodels = CreateConVar("hl1_sv_hdmodels", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Enable HD models for HL weapons")
 
 local cvar_cmodels = CreateConVar("hl1_sv_cmodels", 1, {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Enable c_ models for HL weapons")
 SetGlobalBool("hl1_sv_cmodels", cvar_cmodels:GetBool())
@@ -358,6 +333,23 @@ function SWEP:ApplyViewModel()
 			end
 		end
 		self.UseHands = false
+	end
+
+	if cvar_hdmodels and cvar_hdmodels:GetBool() then
+		if string.find(self.ViewModel, "/hl1/c_") or string.find(self.ViewModel, "/hl1/v_") then
+			local hdVMdl = string.gsub(self.ViewModel, "/hl1/", "/hl1/hd/")
+			if self.ViewModel != hdVMdl and util.IsValidModel(hdVMdl) then
+				self.ViewModel = hdVMdl
+			end
+			local hdWMdl = string.gsub(self.WorldModel, "/hl1/", "/hl1/hd/")
+			if self.WorldModel != hdWMdl and util.IsValidModel(hdWMdl) then
+				self.WorldModel = hdWMdl
+			end
+		end
+	-- else
+		-- if string.find(self.ViewModel, "/hl1/hd/") then
+			-- self.ViewModel = string.gsub(self.ViewModel, "/hl1/hd/", "/hl1/")
+		-- end
 	end
 end
 
