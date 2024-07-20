@@ -140,6 +140,35 @@ else
 end
 
 local cvar_hdmodels = CreateConVar("hl1_sv_hdmodels", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Enable HD models for HL weapons")
+cvars.AddChangeCallback("hl1_sv_hdmodels", function(name, value_old, value_new)
+	local b = tobool(value_new)
+	for _, wep in ipairs(ents.FindByClass("weapon_hl1_*")) do
+		local owner = wep:GetOwner()
+		if b then
+			wep:ApplyHDViewModel()
+			wep:ApplyHDPlayerModel()
+		else
+			wep:ApplySDViewModel()
+			wep:ApplySDPlayerModel()
+		end
+		if IsValid(owner) then
+			local actwep = owner:GetActiveWeapon()
+			if IsValid(actwep) and actwep == wep then
+				local vm = owner:GetViewModel()
+				if IsValid(vm) and vm:GetModel() != wep.ViewModel then
+					vm:SetWeaponModel(wep.ViewModel, wep)
+				end
+			end
+			if b then
+				wep:CallOnClient("ApplyHDPlayerModel")
+				wep:CallOnClient("ResetViewModelOffset")
+			else
+				wep:CallOnClient("ApplySDPlayerModel")
+			end
+			wep:SetPlayerWorldModel()
+		end
+	end
+end)
 
 local cvar_cmodels = CreateConVar("hl1_sv_cmodels", 1, {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Enable c_ models for HL weapons")
 SetGlobalBool("hl1_sv_cmodels", cvar_cmodels:GetBool())
@@ -266,8 +295,7 @@ function SWEP:Initialize()
 			if self:IsHDEnabled() then
 				self:ApplyHDEntModel()
 			end
-			self.WorldModel = self.EntModel
-			self:SetModel(self.WorldModel)
+			self:SetEntityWorldModel()
 		end
 		if SERVER then
 			self:PhysicsDestroy()
@@ -368,11 +396,11 @@ function SWEP:ApplyHDViewModel()
 	end
 end
 
--- function SWEP:ApplySDViewModel()
-	-- if string.find(self.ViewModel, "/hl1/hd/") then
-		-- self.ViewModel = string.gsub(self.ViewModel, "/hl1/hd/", "/hl1/")
-	-- end
--- end
+function SWEP:ApplySDViewModel()
+	if string.find(self.ViewModel, "/hl1/hd/") then
+		self.ViewModel = string.gsub(self.ViewModel, "/hl1/hd/", "/hl1/")
+	end
+end
 
 function SWEP:ApplyHDEntModel()
 	if string.find(self.EntModel, "models/w_") then
@@ -382,7 +410,7 @@ function SWEP:ApplyHDEntModel()
 		end
 	end
 end
-	
+
 function SWEP:ApplyHDPlayerModel()
 	if string.find(self.PlayerModel, "/hl1/p_") then
 		local hdWMdl = string.gsub(self.PlayerModel, "/hl1/", "/hl1/hd/")
@@ -392,10 +420,21 @@ function SWEP:ApplyHDPlayerModel()
 	end
 end
 
+function SWEP:ApplySDPlayerModel()
+	if string.find(self.PlayerModel, "/hl1/hd/p_") then
+		self.PlayerModel = string.gsub(self.PlayerModel, "/hl1/hd/", "/hl1/")
+	end
+end
+
 function SWEP:SetPlayerWorldModel()
 	if self.PlayerModel and self.WorldModel != self.PlayerModel then
 		self.WorldModel = self.PlayerModel
 	end
+end
+
+function SWEP:SetEntityWorldModel()
+	self.WorldModel = self.EntModel
+	self:SetModel(self.WorldModel)
 end
 
 function SWEP:EquipSpecial(ply)
@@ -1046,6 +1085,10 @@ function SWEP:DrawWorldModel()
 		self.WorldModel = self.PlayerModel
 	end
 	self:DrawPlayerModel()
+end
+
+function SWEP:ResetViewModelOffset()
+	self.ViewModelOffset = nil
 end
 
 local cvar_bob = CreateClientConVar("hl1_cl_bob", 0.01, true, false)

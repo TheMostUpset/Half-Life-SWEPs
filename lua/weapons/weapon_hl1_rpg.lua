@@ -60,6 +60,12 @@ function SWEP:SpecialDT()
 	self:NetworkVar("Entity", 1, "SpotEntity")
 end
 
+function SWEP:SpecialInit()
+	if CLIENT and self:IsHDEnabled() then
+		self:ResetViewModelOffset()
+	end
+end
+
 function SWEP:Reload()
 	if self:Clip1() >= 1 or self:rgAmmo() <= 0 then
 		return

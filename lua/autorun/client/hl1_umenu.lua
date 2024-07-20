@@ -57,7 +57,6 @@ local function HL1_SettingsPanel(DForm)
 	DForm:CheckBox("Enable c_ models", "hl1_sv_cmodels")
 	DForm:ControlHelp("requires weapon re-equip to apply")
 	DForm:CheckBox("Enable HD models", "hl1_sv_hdmodels")
-	DForm:ControlHelp("requires weapon re-equip to apply")
 	if game.SinglePlayer() then
 		DForm:CheckBox("Multiplayer rules in singleplayer", "hl1_sv_mprules")
 		DForm:ControlHelp("e.g. gauss jumping, colt zoom, explosive bolts")

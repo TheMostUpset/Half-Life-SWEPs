@@ -76,8 +76,8 @@ function SWEP:SpecialDT()
 end
 
 function SWEP:SpecialInit()
-	if self:IsHDEnabled() then
-		self.ViewModelOffset = nil
+	if CLIENT and self:IsHDEnabled() then
+		self:ResetViewModelOffset()
 	end
 end
 
