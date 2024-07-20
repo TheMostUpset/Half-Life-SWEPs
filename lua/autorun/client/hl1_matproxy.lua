@@ -68,13 +68,17 @@ local function GaussGlowProxy(ent)
 	end	
 	if !IsValid(ent) or !ent.GetInAttack then return end
 	
-	local idleCol = Vector(.5,.5,.5)
+	local idleCol = render.GetLightColor(ent:GetPos())
+	for i = 1, 3 do
+		idleCol[i] = math.max(idleCol[i], .4)
+	end
 
 	local col = idleCol * (math.sin(CurTime() * 5) * .1 + 1)
 	if ent:GetInAttack() > 0 then
 		local charge = math.abs(ent:GetStartCharge() - CurTime()) / ent:GetFullChargeTime()
 		col = idleCol + Vector(1,1,1) * charge
-	end	
+	end
+
 	return col
 end
 matproxy.Add(
