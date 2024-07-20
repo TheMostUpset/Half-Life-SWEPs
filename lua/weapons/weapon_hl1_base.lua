@@ -305,7 +305,7 @@ end
 
 function SWEP:CreatedFromHL1NPC()
 	local owner = self:GetOwner()
-	return IsValid(owner) and owner:IsNPC() and !IsValid(owner:GetActiveWeapon())
+	return IsValid(owner) and owner:IsNPC() and owner:Health() <= 0 and !IsValid(owner:GetActiveWeapon())
 end
 
 function SWEP:Initialize()
@@ -345,16 +345,6 @@ function SWEP:Initialize()
 		end
 	end
 	
-	if self:CreatedFromHL1NPC() then
-		self:SetModelScale(1.25)
-		local phys = self:GetPhysicsObject()
-		if IsValid(phys) then
-			phys:AddVelocity(owner:GetForward() * math.Rand(10, 100) + owner:GetUp() * math.Rand(20, 150))
-			--phys:SetVelocity(Vector(math.Rand(-100, 100), math.Rand(-100, 100), math.Rand(200, 300)))
-			--phys:AddAngleVelocity(Vector(0, math.Rand(200, 400), 0))
-		end
-	end
-	
 	self:SetHoldType(self.HoldType)
 	self:SpecialInit()
 	self:ApplyViewModel()
@@ -362,6 +352,21 @@ function SWEP:Initialize()
 		self:ApplyHDPlayerModel()
 		if IsValid(self.Owner) and self.Owner:IsNPC() then
 			self:SetPlayerWorldModel()
+		end
+	end
+	
+	if self:CreatedFromHL1NPC() then
+		self:SetModelScale(1.25)
+		local phys = self:GetPhysicsObject()
+		if IsValid(phys) then
+			if self:IsHDEnabled() then
+				self:SetModel(self.WorldModel)
+				self:PhysicsInit(SOLID_VPHYSICS)
+				phys = self:GetPhysicsObject()
+			end
+			phys:AddVelocity(owner:GetForward() * math.Rand(10, 100) + owner:GetUp() * math.Rand(20, 150))
+			--phys:SetVelocity(Vector(math.Rand(-100, 100), math.Rand(-100, 100), math.Rand(200, 300)))
+			--phys:AddAngleVelocity(Vector(0, math.Rand(200, 400), 0))
 		end
 	end
 end
@@ -539,7 +544,6 @@ function SWEP:SpecialInit()
 end
 
 function SWEP:Deploy()
-	--self:ApplyViewModel()
 	if IsValid(self.Owner) and self.Owner:IsPlayer() then
 		local vm = self.Owner:GetViewModel()
 		if IsValid(vm) then
