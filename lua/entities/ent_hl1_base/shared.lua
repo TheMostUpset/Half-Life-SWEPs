@@ -44,3 +44,7 @@ function ENT:ImpactEffect(tr)
 
 	util.Effect(effect, e, true, true)
 end
+
+function ENT:IsHDEnabled()
+	return GetConVar("hl1_sv_hdmodels"):GetBool()
+end

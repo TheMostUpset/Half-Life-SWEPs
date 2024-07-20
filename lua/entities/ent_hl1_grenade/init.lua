@@ -2,6 +2,7 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 ENT.Model = Model("models/w_grenade.mdl")
+ENT.ModelHD = Model("models/hl1/hd/w_grenade.mdl")
 ENT.BounceSounds = {
 	Sound("hl1/weapons/grenade_hit1.wav"),
 	Sound("hl1/weapons/grenade_hit2.wav"),
@@ -13,7 +14,11 @@ function ENT:Initialize()
 	self:SetMoveCollide(MOVECOLLIDE_FLY_BOUNCE)
 	self:SetSolid(SOLID_BBOX)
 	self:AddSolidFlags(FSOLID_NOT_STANDABLE)
-	self:SetModel(self.Model)
+	if self:IsHDEnabled() then
+		self:SetModel(self.ModelHD)
+	else
+		self:SetModel(self.Model)
+	end
 	self:SetCollisionBounds(Vector(), Vector())
 	
 	self.m_bHasWarnedAI = false

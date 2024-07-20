@@ -64,6 +64,7 @@ if SERVER then
 		util.AddNetworkString("HL1punchangle")
 	end
 	util.AddNetworkString("HL1tpAnim")
+	util.AddNetworkString("HL1toggleHD")
 	
 	concommand.Add("hl1_impulse101", function(ply, cmd, args)
 
@@ -137,38 +138,64 @@ else
 	CreateClientConVar("hl1_cl_muzzlesmoke", 1, true, false, "Muzzle smoke effect")
 	CreateClientConVar("hl1_cl_ejectshells", 1, true, false, "Eject shells")
 	
+	net.Receive("HL1toggleHD", function()
+		local enable, wep = net.ReadBool(), net.ReadEntity()
+		if IsValid(wep) then
+			if enable then
+				wep:ApplyHDViewModel()
+				wep:ResetViewModelOffset()
+				wep:ApplyHDPlayerModel()
+				wep:ApplyHDEntModel()
+			else
+				wep:ApplySDViewModel()
+				wep:ApplySDPlayerModel()
+				wep:ApplySDEntModel()
+			end
+			if !IsValid(wep:GetOwner()) then
+				wep:SetEntityWorldModel()
+			end
+		end
+	end)
 end
 
 local cvar_hdmodels = CreateConVar("hl1_sv_hdmodels", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Enable HD models for HL weapons")
-cvars.AddChangeCallback("hl1_sv_hdmodels", function(name, value_old, value_new)
-	local b = tobool(value_new)
-	for _, wep in ipairs(ents.FindByClass("weapon_hl1_*")) do
-		local owner = wep:GetOwner()
-		if b then
-			wep:ApplyHDViewModel()
-			wep:ApplyHDPlayerModel()
-		else
-			wep:ApplySDViewModel()
-			wep:ApplySDPlayerModel()
-		end
-		if IsValid(owner) then
-			local actwep = owner:GetActiveWeapon()
-			if IsValid(actwep) and actwep == wep then
-				local vm = owner:GetViewModel()
-				if IsValid(vm) and vm:GetModel() != wep.ViewModel then
-					vm:SetWeaponModel(wep.ViewModel, wep)
+if SERVER then
+	cvars.AddChangeCallback("hl1_sv_hdmodels", function(name, value_old, value_new)
+		local b = tobool(value_new)
+		for _, wep in ipairs(ents.FindByClass("weapon_*")) do
+			if wep.IsHL1Base then
+				local owner = wep:GetOwner()
+				if b then
+					wep:ApplyHDViewModel()
+					wep:ApplyHDPlayerModel()
+					wep:ApplyHDEntModel()
+				else
+					wep:ApplySDViewModel()
+					wep:ApplySDPlayerModel()
+					wep:ApplySDEntModel()
 				end
+				if IsValid(owner) then
+					if owner:IsPlayer() then
+						local actwep = owner:GetActiveWeapon()
+						if IsValid(actwep) and actwep == wep then
+							local vm = owner:GetViewModel()
+							if IsValid(vm) and vm:GetModel() != wep.ViewModel then
+								vm:SetWeaponModel(wep.ViewModel, wep)
+							end
+						end
+					end
+					wep:SetPlayerWorldModel()
+				else
+					wep:SetEntityWorldModel()
+				end
+				net.Start("HL1toggleHD")
+				net.WriteBool(b)
+				net.WriteEntity(wep)
+				net.Broadcast()
 			end
-			if b then
-				wep:CallOnClient("ApplyHDPlayerModel")
-				wep:CallOnClient("ResetViewModelOffset")
-			else
-				wep:CallOnClient("ApplySDPlayerModel")
-			end
-			wep:SetPlayerWorldModel()
 		end
-	end
-end)
+	end)
+end
 
 local cvar_cmodels = CreateConVar("hl1_sv_cmodels", 1, {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Enable c_ models for HL weapons")
 SetGlobalBool("hl1_sv_cmodels", cvar_cmodels:GetBool())
@@ -333,6 +360,9 @@ function SWEP:Initialize()
 	self:ApplyViewModel()
 	if self:IsHDEnabled() then
 		self:ApplyHDPlayerModel()
+		if IsValid(self.Owner) and self.Owner:IsNPC() then
+			self:SetPlayerWorldModel()
+		end
 	end
 end
 
@@ -408,6 +438,12 @@ function SWEP:ApplyHDEntModel()
 		if self.EntModel != hdWMdl and util.IsValidModel(hdWMdl) then
 			self.EntModel = hdWMdl
 		end
+	end
+end
+
+function SWEP:ApplySDEntModel()
+	if string.find(self.EntModel, "models/hl1/hd/w_") then
+		self.EntModel = string.gsub(self.EntModel, "models/hl1/hd/", "models/")
 	end
 end
 

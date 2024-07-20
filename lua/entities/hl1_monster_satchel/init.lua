@@ -3,12 +3,17 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 ENT.Model = Model("models/w_satchel.mdl")
+ENT.ModelHD = Model("models/hl1/hd/w_satchel.mdl")
 
 function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_FLYGRAVITY)
 	self:SetMoveCollide(MOVECOLLIDE_FLY_SLIDE)
 	self:SetSolid(SOLID_BBOX)
-	self:SetModel(self.Model)
+	if self:IsHDEnabled() then
+		self:SetModel(self.ModelHD)
+	else
+		self:SetModel(self.Model)
+	end
 	self:SetCollisionBounds(Vector(-4, -4, 0), Vector(4, 4, 8))	
 	
 	self:NextThink(CurTime() + .1)
