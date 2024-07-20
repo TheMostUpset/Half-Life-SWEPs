@@ -63,19 +63,17 @@ local function GaussGlowProxy(ent)
 	if !IsValid(ent) then return end
 	local owner = ent:GetOwner()
 	if !IsValid(owner) or !owner:IsPlayer() then return end	
-	if !ent:IsWeapon() then
-		ent = owner:GetActiveWeapon()
-	end	
-	if !IsValid(ent) or !ent.GetInAttack then return end
+	local wep = !ent:IsWeapon() and owner:GetActiveWeapon()
+	if !IsValid(wep) or !wep.GetInAttack then return end
 	
-	local idleCol = render.GetLightColor(ent:GetPos())
+	local idleCol = render.GetLightColor(ent:GetPos()) * 1.5
 	for i = 1, 3 do
 		idleCol[i] = math.max(idleCol[i], .4)
 	end
 
 	local col = idleCol * (math.sin(CurTime() * 5) * .1 + 1)
-	if ent:GetInAttack() > 0 then
-		local charge = math.abs(ent:GetStartCharge() - CurTime()) / ent:GetFullChargeTime()
+	if wep:GetInAttack() > 0 then
+		local charge = math.abs(wep:GetStartCharge() - CurTime()) / wep:GetFullChargeTime()
 		col = idleCol + Vector(1,1,1) * charge
 	end
 
