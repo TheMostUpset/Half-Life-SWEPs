@@ -486,8 +486,9 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 				util.Decal("FadingScorch", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
 				local data4 = EffectData()
 				data4:SetOrigin(tr.HitPos)
+				data4:SetNormal(tr.HitNormal)
 				data4:SetMagnitude(flDamage)
-				util.Effect("HL1GaussWallImpact1", data4)
+				util.Effect("hl1_gauss_wallimpact", data4)
 			
 				// limit it to one hole punch
 				if fHasPunched then
