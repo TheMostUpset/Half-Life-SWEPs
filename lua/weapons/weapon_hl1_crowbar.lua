@@ -19,9 +19,12 @@ SWEP.Spawnable			= true
 
 SWEP.PlayerModel		= Model("models/hl1/p_crowbar.mdl")
 SWEP.EntModel			= Model("models/w_crowbar.mdl")
+SWEP.EntModelHD			= Model("models/hl1/hd/w_crowbar.mdl")
 
 SWEP.CModel				= Model("models/hl1/c_crowbar.mdl")
+SWEP.CModelHD			= Model("models/hl1/hd/c_crowbar.mdl")
 SWEP.VModel				= Model("models/hl1/v_crowbar.mdl")
+SWEP.VModelHD			= Model("models/hl1/hd/v_crowbar.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel

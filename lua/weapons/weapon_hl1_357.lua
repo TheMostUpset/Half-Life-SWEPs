@@ -20,10 +20,14 @@ SWEP.Category			= "Half-Life"
 SWEP.Spawnable			= true
 
 SWEP.PlayerModel		= Model("models/hl1/p_357.mdl")
+SWEP.PlayerModelHD		= Model("models/hl1/hd/p_357.mdl")
 SWEP.EntModel			= Model("models/w_357.mdl")
+SWEP.EntModelHD			= Model("models/hl1/hd/w_357.mdl")
 
 SWEP.CModel				= Model("models/hl1/c_357.mdl")
+SWEP.CModelHD			= Model("models/hl1/hd/c_357.mdl")
 SWEP.VModel				= Model("models/hl1/v_357.mdl")
+SWEP.VModelHD			= Model("models/hl1/hd/v_357.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel

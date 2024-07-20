@@ -163,7 +163,7 @@ if SERVER then
 	cvars.AddChangeCallback("hl1_sv_hdmodels", function(name, value_old, value_new)
 		local b = tobool(value_new)
 		for _, wep in ipairs(ents.FindByClass("weapon_*")) do
-			if wep.IsHL1Base then
+			if wep.Base == "weapon_hl1_base" then
 				local owner = wep:GetOwner()
 				if b then
 					wep:ApplyHDViewModel()
@@ -371,12 +371,16 @@ function SWEP:Initialize()
 	end
 end
 
+function SWEP:IsCModelsEnabled()
+	return GetGlobalBool("hl1_sv_cmodels", true)
+end
+
 function SWEP:IsHDEnabled()
-	return cvar_hdmodels and cvar_hdmodels:GetBool()
+	return cvar_hdmodels and cvar_hdmodels:GetBool() and self.Base == "weapon_hl1_base"
 end
 
 function SWEP:ApplyViewModel()
-	if GetGlobalBool("hl1_sv_cmodels", true) then
+	if self:IsCModelsEnabled() then
 		if self.CModel and self.ViewModel != self.CModel then
 			self.ViewModel = self.CModel
 		end
@@ -413,14 +417,33 @@ function SWEP:ApplyViewModel()
 	end
 end
 
+function SWEP:SaveOldViewModel()
+	if self.ViewModel == self.CModel then
+		if !self.CModelSD then self.CModelSD = self.ViewModel end
+	else
+		if !self.VModelSD then self.VModelSD = self.ViewModel end
+	end
+end
+
 function SWEP:ApplyHDViewModel()
-	if string.find(self.ViewModel, "/hl1/c_") or string.find(self.ViewModel, "/hl1/v_") then
+	if self.CModelHD and self.UseHands then
+		if util.IsValidModel(self.CModelHD) then
+			self:SaveOldViewModel()
+			self.ViewModel = self.CModelHD
+		end
+	elseif self.VModelHD then
+		if util.IsValidModel(self.VModelHD) then
+			self:SaveOldViewModel()
+			self.ViewModel = self.VModelHD
+			self.UseHands = false
+		end
+	elseif string.find(self.ViewModel, "/hl1/c_") or string.find(self.ViewModel, "/hl1/v_") then
 		local hdVMdl = string.gsub(self.ViewModel, "/hl1/", "/hl1/hd/")
 		if self.ViewModel != hdVMdl then
 			if util.IsValidModel(hdVMdl) then
 				self.ViewModel = hdVMdl
 			else
-				-- try fallback to v_ model (for hgun and gauss)
+				-- try fallback to v_ model
 				local hdVMdl = string.gsub(self.ViewModel, "/hl1/c_", "/hl1/hd/v_")
 				if util.IsValidModel(hdVMdl) then
 					self.ViewModel = hdVMdl
@@ -432,38 +455,44 @@ function SWEP:ApplyHDViewModel()
 end
 
 function SWEP:ApplySDViewModel()
-	if string.find(self.ViewModel, "/hl1/hd/") then
+	if self.CModelSD then
+		self.ViewModel = self.CModelSD
+		self.UseHands = true
+	elseif self.VModelSD then
+		self.ViewModel = self.VModelSD
+		self.UseHands = false
+	elseif string.find(self.ViewModel, "/hl1/hd/") then
 		self.ViewModel = string.gsub(self.ViewModel, "/hl1/hd/", "/hl1/")
 	end
 end
 
 function SWEP:ApplyHDEntModel()
-	if string.find(self.EntModel, "models/w_") then
-		local hdWMdl = string.gsub(self.EntModel, "models/w_", "models/hl1/hd/w_")
-		if self.EntModel != hdWMdl and util.IsValidModel(hdWMdl) then
-			self.EntModel = hdWMdl
+	if self.EntModelHD then
+		if self.EntModel != self.EntModelHD and util.IsValidModel(self.EntModelHD) then
+			if !self.EntModelSD then self.EntModelSD = self.EntModel end
+			self.EntModel = self.EntModelHD
 		end
 	end
 end
 
 function SWEP:ApplySDEntModel()
-	if string.find(self.EntModel, "models/hl1/hd/w_") then
-		self.EntModel = string.gsub(self.EntModel, "models/hl1/hd/", "models/")
+	if self.EntModelSD then
+		self.EntModel = self.EntModelSD
 	end
 end
 
 function SWEP:ApplyHDPlayerModel()
-	if string.find(self.PlayerModel, "/hl1/p_") then
-		local hdWMdl = string.gsub(self.PlayerModel, "/hl1/", "/hl1/hd/")
-		if self.PlayerModel != hdWMdl and util.IsValidModel(hdWMdl) then
-			self.PlayerModel = hdWMdl
+	if self.PlayerModelHD then
+		if self.PlayerModel != self.PlayerModelHD and util.IsValidModel(self.PlayerModelHD) then
+			if !self.PlayerModelSD then self.PlayerModelSD = self.PlayerModel end
+			self.PlayerModel = self.PlayerModelHD
 		end
 	end
 end
 
 function SWEP:ApplySDPlayerModel()
-	if string.find(self.PlayerModel, "/hl1/hd/p_") then
-		self.PlayerModel = string.gsub(self.PlayerModel, "/hl1/hd/", "/hl1/")
+	if self.PlayerModelSD then
+		self.PlayerModel = self.PlayerModelSD
 	end
 end
 

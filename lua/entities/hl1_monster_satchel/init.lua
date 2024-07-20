@@ -9,7 +9,7 @@ function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_FLYGRAVITY)
 	self:SetMoveCollide(MOVECOLLIDE_FLY_SLIDE)
 	self:SetSolid(SOLID_BBOX)
-	if self:IsHDEnabled() then
+	if self:IsHDEnabled() and self.Model == "models/w_satchel.mdl" then
 		self:SetModel(self.ModelHD)
 	else
 		self:SetModel(self.Model)

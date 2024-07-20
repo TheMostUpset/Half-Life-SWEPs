@@ -27,6 +27,7 @@ SWEP.ModelSatchelView	= SWEP.CModelSatchel
 SWEP.ModelRadioView		= SWEP.CModelRadio
 
 SWEP.EntModel			= Model("models/w_satchel.mdl")
+SWEP.EntModelHD			= Model("models/hl1/hd/w_satchel.mdl")
 SWEP.PlayerModel		= Model("models/hl1/p_satchel.mdl")
 
 SWEP.ViewModel			= SWEP.ModelSatchelView

@@ -21,6 +21,7 @@ SWEP.UseHands			= false
 
 SWEP.PlayerModel		= Model("models/hl1/p_hgun.mdl")
 SWEP.EntModel			= Model("models/w_hgun.mdl")
+SWEP.EntModelHD			= Model("models/hl1/hd/w_hgun.mdl")
 
 SWEP.ViewModel			= Model("models/hl1/v_hgun.mdl")
 SWEP.WorldModel			= SWEP.PlayerModel

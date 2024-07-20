@@ -18,9 +18,12 @@ SWEP.Spawnable			= true
 
 SWEP.PlayerModel		= Model("models/hl1/p_grenade.mdl")
 SWEP.EntModel			= Model("models/w_grenade.mdl")
+SWEP.EntModelHD			= Model("models/hl1/hd/w_grenade.mdl")
 
 SWEP.CModel				= Model("models/hl1/c_grenade.mdl")
+SWEP.CModelHD			= Model("models/hl1/hd/c_grenade.mdl")
 SWEP.VModel				= Model("models/hl1/v_grenade.mdl")
+SWEP.VModelHD			= Model("models/hl1/hd/v_grenade.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel

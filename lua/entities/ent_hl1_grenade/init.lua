@@ -14,7 +14,7 @@ function ENT:Initialize()
 	self:SetMoveCollide(MOVECOLLIDE_FLY_BOUNCE)
 	self:SetSolid(SOLID_BBOX)
 	self:AddSolidFlags(FSOLID_NOT_STANDABLE)
-	if self:IsHDEnabled() then
+	if self:IsHDEnabled() and self.Model == "models/w_grenade.mdl" then
 		self:SetModel(self.ModelHD)
 	else
 		self:SetModel(self.Model)

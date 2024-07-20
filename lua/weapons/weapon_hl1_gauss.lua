@@ -20,9 +20,11 @@ SWEP.Spawnable			= true
 
 SWEP.PlayerModel		= Model("models/hl1/p_gauss.mdl")
 SWEP.EntModel			= Model("models/w_gauss.mdl")
+SWEP.EntModelHD			= Model("models/hl1/hd/w_gauss.mdl")
 
 SWEP.CModel				= Model("models/hl1/c_gauss.mdl")
 SWEP.VModel				= Model("models/hl1/v_gauss.mdl")
+SWEP.VModelHD			= Model("models/hl1/hd/v_gauss.mdl")
 
 SWEP.ViewModel			= SWEP.CModel
 SWEP.WorldModel			= SWEP.PlayerModel
