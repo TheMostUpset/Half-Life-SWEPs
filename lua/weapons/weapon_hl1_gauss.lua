@@ -74,11 +74,11 @@ function SWEP:GlowSprite(tr, m)
 	end
 end
 
-function SWEP:ImpactBalls(tr, m)
+function SWEP:ImpactBalls(pos, norm, m, tr)
 	if IsFirstTimePredicted() and !tr.Entity:IsPlayer() and !tr.Entity:IsNPC() and !tr.Entity:IsNextBot() then
 		local impactfx = EffectData()
-		impactfx:SetOrigin(tr.HitPos)
-		impactfx:SetNormal(tr.HitNormal)
+		impactfx:SetOrigin(pos)
+		impactfx:SetNormal(norm)
 		//impactfx:SetMagnitude(m)
 		util.Effect("hl1_gauss_impact", impactfx)
 	end
@@ -123,7 +123,7 @@ function SWEP:PrimaryAttack()
 			end
 	
 			self:DoRicochetSound(tr.HitPos)		
-			self:ImpactBalls(tr)
+			self:ImpactBalls(tr.HitPos, tr.HitNormal, nil, tr)
 			util.Decal("FadingScorch", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
 				
 			if IsValid(tr.Entity) then
@@ -467,11 +467,11 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 				data1:SetNormal(tr.HitNormal)
 				data1:SetMagnitude(flDamage * n)
 				util.Effect("hl1_gauss_glow", data1)*/
-				//HL1GaussReflect
+				//gmod effect is HL1GaussReflect but i guess it's only the balls, so we dont need it?
 				
 				//gEngfuncs.pEfxAPI->R_TempSprite( tr.endpos, vec3_origin, 0.2, m_iGlow, kRenderGlow, kRenderFxNoDissipation, flDamage * n / 255.0, flDamage * n * 0.5 * 0.1, FTENT_FADEOUT );
 				//self:GlowSprite(tr, flDamage / 255.0)
-				self:ImpactBalls(tr, flDamage * n)
+				self:ImpactBalls(tr.HitPos, tr.HitNormal, flDamage * n, tr)
 				
 				// lose energy
 				if (n == 0) then
@@ -484,8 +484,10 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 				// tunnel
 				self:DoRicochetSound(tr.HitPos)
 				util.Decal("FadingScorch", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
-				//self:GlowSprite(tr, flDamage)
-				// R_TempSprite( tr.endpos, vec3_origin, 1.0, m_iGlow, kRenderGlow, kRenderFxNoDissipation, flDamage / 255.0, 6.0, FTENT_FADEOUT );
+				local data4 = EffectData()
+				data4:SetOrigin(tr.HitPos)
+				data4:SetMagnitude(flDamage)
+				util.Effect("HL1GaussWallImpact1", data4)
 			
 				// limit it to one hole punch
 				if fHasPunched then
@@ -525,8 +527,8 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 							data2:SetNormal(vecDir)
 							util.Effect( "HL1GaussWallPunchEnter", data2)*/
 							
-							self:ImpactBalls(tr)
 							if !pEntity:IsPlayer() and !pEntity:IsNPC() and !pEntity:IsNextBot() then
+								self:ImpactBalls(tr.HitPos, vecDir, nil, tr)
 								self:DoRicochetSound(tr.HitPos)
 								util.Decal("FadingScorch", tr.HitPos - tr.HitNormal, tr.HitPos + tr.HitNormal)
 							end
@@ -536,6 +538,8 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 							data3:SetNormal(vecDir)
 							data3:SetMagnitude(flDamage)
 							util.Effect( "HL1GaussWallPunchExit", data3)*/
+							self:GlowSprite(exit_tr, flDamage)
+							self:ImpactBalls(exit_tr.HitPos, vecDir, flDamage, exit_tr)
 							
 							// exit blast damage
 							local damage_radius
@@ -565,7 +569,7 @@ function SWEP:GaussFire(vecOrigSrc, vecDir, flDamage)
 						// fire, so leave a little glowy bit and make some balls
 						//gEngfuncs.pEfxAPI->R_TempSprite( tr.endpos, vec3_origin, 0.2, m_iGlow, kRenderGlow, kRenderFxNoDissipation, 200.0 / 255.0, 0.3, FTENT_FADEOUT );
 						self:GlowSprite(tr, 200 / 255)
-						self:ImpactBalls(tr)
+						self:ImpactBalls(tr.HitPos, tr.HitNormal, nil, tr)
 					end
 					flDamage = 0
 				end
