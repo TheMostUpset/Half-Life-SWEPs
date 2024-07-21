@@ -359,15 +359,14 @@ function SWEP:Initialize()
 		self:SetModelScale(1.25)
 		local phys = self:GetPhysicsObject()
 		if IsValid(phys) then
-			if self:IsHDEnabled() then
+			if SERVER and self:IsHDEnabled() then
 				self:SetModel(self.WorldModel)
-				self:PhysicsInit(SOLID_VPHYSICS)
-				phys = self:GetPhysicsObject()
 			end
 			phys:AddVelocity(owner:GetForward() * math.Rand(10, 100) + owner:GetUp() * math.Rand(20, 150))
 			--phys:SetVelocity(Vector(math.Rand(-100, 100), math.Rand(-100, 100), math.Rand(200, 300)))
 			--phys:AddAngleVelocity(Vector(0, math.Rand(200, 400), 0))
 		end
+		if SERVER then self:Activate() end
 	end
 end
 
