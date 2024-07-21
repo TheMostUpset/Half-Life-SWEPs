@@ -54,6 +54,9 @@ function SWEP:SpecialDeploy()
 	else
 		self.ViewModel = self.ModelSatchelView
 	end
+	if self:IsHDEnabled() then
+		self:ApplyHDViewModel()
+	end
 	self:SendWeaponAnim(ACT_VM_DRAW)
 end
 

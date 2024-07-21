@@ -194,7 +194,7 @@ if SERVER then
 				net.Broadcast()
 			end
 		end
-	end)
+	end, "ToggleHD")
 end
 
 local cvar_cmodels = CreateConVar("hl1_sv_cmodels", 1, {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Enable c_ models for HL weapons")
@@ -467,11 +467,9 @@ function SWEP:ApplySDViewModel()
 end
 
 function SWEP:ApplyHDEntModel()
-	if self.EntModelHD then
-		if self.EntModel != self.EntModelHD and util.IsValidModel(self.EntModelHD) then
-			if !self.EntModelSD then self.EntModelSD = self.EntModel end
-			self.EntModel = self.EntModelHD
-		end
+	if self.EntModelHD and self.EntModel != self.EntModelHD and util.IsValidModel(self.EntModelHD) then
+		if !self.EntModelSD then self.EntModelSD = self.EntModel end
+		self.EntModel = self.EntModelHD
 	end
 end
 
@@ -482,11 +480,9 @@ function SWEP:ApplySDEntModel()
 end
 
 function SWEP:ApplyHDPlayerModel()
-	if self.PlayerModelHD then
-		if self.PlayerModel != self.PlayerModelHD and util.IsValidModel(self.PlayerModelHD) then
-			if !self.PlayerModelSD then self.PlayerModelSD = self.PlayerModel end
-			self.PlayerModel = self.PlayerModelHD
-		end
+	if self.PlayerModelHD and self.PlayerModel != self.PlayerModelHD and util.IsValidModel(self.PlayerModelHD) then
+		if !self.PlayerModelSD then self.PlayerModelSD = self.PlayerModel end
+		self.PlayerModel = self.PlayerModelHD
 	end
 end
 
