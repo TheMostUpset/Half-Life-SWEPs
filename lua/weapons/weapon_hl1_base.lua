@@ -48,15 +48,30 @@ if SERVER then
 	end
 	CreateConVar("hl1_sv_itemrespawntime", 23, FCVAR_NOTIFY, "Respawn time for items in Deathmatch", 0)
 	CreateConVar("hl1_sv_mprules", 0, FCVAR_NOTIFY, "Deathmatch rules in singleplayer", 0, 1)
-	CreateConVar("hl1_sv_loadout", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Players spawn with HL weapons", 0, 1)
+	local cvar_loadout = CreateConVar("hl1_sv_loadout", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Players spawn with HL weapons (1 - crowbar & pistol, 2 - full loadout)", 0, 2)
 	CreateConVar("hl1_sv_gauss_tracebackwards", 1, FCVAR_NOTIFY, "", 0, 1)
 	CreateConVar("hl1_sv_explosionshake", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Enable screen shake after explosions", 0, 1)
 	
 	hook.Add("PlayerLoadout", "HL1Loadout", function(ply)
-		if cvars.Bool("hl1_sv_loadout") then
+		if cvar_loadout:GetInt() == 1 then
 			ply:Give("weapon_hl1_glock")
 			ply:Give("weapon_hl1_crowbar")
-			ply:SetAmmo(68, "9mmRound")
+			timer.Simple(0, function()
+				if IsValid(ply) then
+					ply:GiveAmmo(68, "9mmRound", true)
+				end
+			end)
+		elseif cvar_loadout:GetInt() == 2 then
+			for k, v in pairs(weps) do
+				ply:Give(v[1])
+				timer.Simple(0, function()
+					if IsValid(ply) then
+						local entWep = ply:GetWeapon(v[1])
+						if entWep.Primary.DefaultClip > 0 then ply:GiveAmmo(entWep.Primary.DefaultClip * 2, entWep:GetPrimaryAmmoType(), true) end
+						if entWep.Secondary.DefaultClip > 0 then ply:GiveAmmo(entWep.Secondary.DefaultClip, entWep:GetSecondaryAmmoType(), true) end
+					end
+				end)
+			end
 		end
 	end)	
 	
