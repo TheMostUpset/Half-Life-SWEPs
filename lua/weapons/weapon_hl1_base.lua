@@ -277,7 +277,13 @@ SWEP.GoldSrcRecoil			= true
 
 function SWEP:IsBSPModel(ent)
 	return ent:GetSolid() == SOLID_BSP || ent:GetMoveType() == MOVETYPE_PUSH --or walk?
-end	
+end
+
+function SWEP:KeyValue(k, v)
+	if k == "respawnable" then
+		self.rRespawnable = tobool(v)
+	end
+end
 
 function SWEP:SetupDataTables()
 	self:NetworkVar("Bool", 0, "iPlayEmptySound")
