@@ -4,6 +4,14 @@ include("shared.lua")
 
 util.AddNetworkString("HL1_HUDPickupMessage")
 
+function ENT:KeyValue(k, v)
+	if k == "respawnable" then
+		self.Respawnable = tobool(v)
+	elseif k == "OnPlayerTouch" then
+		self:StoreOutput(k, v)
+	end
+end
+
 function ENT:Initialize()
 	if !self:IsInWorld() then
 		print(self:GetClass().." is not in world, removing!", self:GetPos())

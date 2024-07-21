@@ -24,4 +24,5 @@ function ENT:Pickup(ply)
 	end
 	self.Pickable = false
 	self:PickupMessage(ply, self.PickupMsgClass)
+	self:TriggerOutput("OnPlayerTouch", ply)
 end

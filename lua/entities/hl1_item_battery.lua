@@ -29,4 +29,5 @@ function ENT:Pickup(ply)
 	self.Pickable = false
 	self:PickupMessage(ply, self.PickupMsgClass)
 	self:HEV_ArmorPickup(ply, maxarmor)
+	self:TriggerOutput("OnPlayerTouch", ply)
 end

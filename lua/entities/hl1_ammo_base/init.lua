@@ -24,4 +24,5 @@ function ENT:Pickup(ent)
 	end
 	ent:EmitSound(self.PickupSound, 85, 100, 1, CHAN_ITEM)
 	self.Pickable = false
+	self:TriggerOutput("OnPlayerTouch", ent)
 end
