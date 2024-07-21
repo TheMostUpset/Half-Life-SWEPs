@@ -124,11 +124,7 @@ function ENT:KillBeam()
 end
 
 function ENT:MakeBeam()
-	local tr = util.TraceLine({
-		start = self:GetPos(),
-		endpos = self.m_vecEnd,
-		filter = self
-	})
+	local tr = self:BeamTrace(self:GetPos(), self.m_vecEnd)
 	
 	self.m_flBeamLength = tr.Fraction
 	
@@ -144,11 +140,7 @@ end
 function ENT:BeamBreakThink()
 	local bBlowup = false
 	
-	local tr = util.TraceHull({
-		start = self:GetPos(),
-		endpos = self.m_vecEnd,
-		filter = {self, self.m_hOwner}
-	})
+	local tr = self:BeamTrace(self:GetPos(), self.m_vecEnd, self.m_hOwner)
 
 	// respawn detect. 
 	if !self:GetDrawLaser() then
