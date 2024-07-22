@@ -1,3 +1,7 @@
+local cvar_light = GetConVar("hl1_cl_firelight")
+local cvar_muzzle = GetConVar("hl1_cl_muzzleflash")
+local cvar_smoke = GetConVar("hl1_cl_muzzlesmoke")
+
 function EFFECT:GetMuzzleFlashPos(Position, Ent, Attachment)
 
 	if !IsValid(Ent) then return Position end
@@ -23,12 +27,12 @@ function EFFECT:GetMuzzleFlashPos(Position, Ent, Attachment)
 	-- Shoot from the world model
 	else
 	
-		local att = Ent:GetAttachment(Attachment)
-		if att then
-			Position = att.Pos
-		else
-			local owner = Ent:GetOwner()
-			if IsValid(owner) then
+		local owner = Ent:GetOwner()
+		if IsValid(owner) and (ply:IsLineOfSightClear(owner) or owner == ply) then
+			local att = Ent:GetAttachment(Attachment)
+			if att then
+				Position = att.Pos
+			else
 				local hand = owner:GetAttachment(owner:LookupAttachment("anim_attachment_rh"))
 				if hand then
 					Position = hand.Pos + hand.Ang:Forward() * self.WPos[1] + hand.Ang:Right() * self.WPos[2] + hand.Ang:Up() * self.WPos[3]
@@ -57,36 +61,40 @@ function EFFECT:Init(data)
 	local pos = self:GetMuzzleFlashPos(self.Position, self.WeaponEnt, self.Attachment)
 	local emitter = ParticleEmitter(pos)
 	
-	self.particle = emitter:Add( "hl1/sprites/muzzleflash1_hd", pos )
-	self.particle:SetVelocity( 60 * self.Normal )
-	self.particle:SetGravity( Vector(0,0,0) )
-	self.particle:SetDieTime( self.DieTime )
-	self.particle:SetStartAlpha( 255 )
-	self.particle:SetStartSize( math.Rand(8, 10) * self.Size )
-	self.particle:SetEndSize( math.Rand(12, 14) * self.Size )
-	self.particle:SetRoll( math.Rand( -180, 180 ) )
-	self.particle:SetRollDelta( math.Rand( -1, 1 ) )
-	self.particle:SetColor( 255, 255, 255 )	
+	if !cvar_muzzle or cvar_muzzle:GetBool() then
+		self.particle = emitter:Add( "hl1/sprites/muzzleflash1_hd", pos )
+		self.particle:SetVelocity( 60 * self.Normal )
+		self.particle:SetGravity( Vector(0,0,0) )
+		self.particle:SetDieTime( self.DieTime )
+		self.particle:SetStartAlpha( 255 )
+		self.particle:SetStartSize( math.Rand(8, 10) * self.Size )
+		self.particle:SetEndSize( math.Rand(12, 14) * self.Size )
+		self.particle:SetRoll( math.Rand( -180, 180 ) )
+		self.particle:SetRollDelta( math.Rand( -1, 1 ) )
+		self.particle:SetColor( 255, 255, 255 )	
+	end
 		
-	for i = 1, 4 do
-		local smokecol = math.random(40, 170)
-		local smoke = emitter:Add("particle/particle_smokegrenade", pos)
-		smoke:SetVelocity(40 * self.Normal * i)
-		smoke:SetAirResistance(128)
-		smoke:SetGravity(Vector(0, 0, math.Rand(50, 140)))
-		smoke:SetDieTime(math.Rand(.1, .5))
-		smoke:SetStartAlpha(math.Rand(160, 255))
-		smoke:SetEndAlpha(0)
-		smoke:SetStartSize(math.Rand(0, 1) * self.Size)
-		smoke:SetEndSize(math.Rand(5, 15) * self.Size)
-		smoke:SetRoll(math.Rand(-180, 180))
-		smoke:SetRollDelta(math.Rand(-3, 3))
-		smoke:SetColor(smokecol, smokecol, smokecol)
+	if !cvar_smoke or cvar_smoke:GetBool() then
+		for i = 1, 4 do
+			local smokecol = math.random(40, 170)
+			local smoke = emitter:Add("particle/particle_smokegrenade", pos)
+			smoke:SetVelocity(40 * self.Normal * i)
+			smoke:SetAirResistance(128)
+			smoke:SetGravity(Vector(0, 0, math.Rand(50, 140)))
+			smoke:SetDieTime(math.Rand(.1, .5))
+			smoke:SetStartAlpha(math.Rand(160, 255))
+			smoke:SetEndAlpha(0)
+			smoke:SetStartSize(math.Rand(0, 1) * self.Size)
+			smoke:SetEndSize(math.Rand(5, 15) * self.Size)
+			smoke:SetRoll(math.Rand(-180, 180))
+			smoke:SetRollDelta(math.Rand(-3, 3))
+			smoke:SetColor(smokecol, smokecol, smokecol)
+		end
 	end
 
 	emitter:Finish()
 	
-	if cvars.Bool("hl1_cl_firelight") then
+	if !cvar_light or cvar_light:GetBool() then
 		local dynlight = DynamicLight(self:EntIndex())
 		dynlight.Pos = pos
 		dynlight.Size = 75
@@ -102,6 +110,7 @@ function EFFECT:Init(data)
 end
 
 function EFFECT:Think()
+	if !self.particle then return false end
 	local pos = self:GetMuzzleFlashPos(self.Position, self.WeaponEnt, self.Attachment, self.ModelIndex)
 	self.particle:SetPos(pos)
 	self.DieTime = self.DieTime - FrameTime()
