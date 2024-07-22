@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/v_squeak/Snark_reference"
+	"$bumpmap" "models/hl1/hd/v_squeak/Snark_reference_normal"
+}

@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/v_357/v_python_Reference"
+	"$bumpmap" "models/hl1/hd/v_357/v_python_Reference_normal"
+}

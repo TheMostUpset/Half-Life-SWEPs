@@ -1,0 +1,21 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/w_gauss/w_gauss"
+	"$selfillum" 0
+	"$selfillummask" "models/hl1/hd/w_gauss/w_gauss_mask"
+	"$glow" "[1 1 1]"
+	"$glowMul" "[.2 .2 .2]"
+	"Proxies"
+	{
+		"HL1GaussGlow"
+		{
+			"resultVar" "$glow"
+		}
+		"Multiply"
+		{
+			"srcVar1" "$glow"
+			"srcVar2" "$glowMul"
+			"resultVar" "$selfillumtint"
+		}
+	}
+}

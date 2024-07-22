@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/v_9mmAR/m4_reference"
+	"$color2" "[2 2 2]" // cuz it's too dark
+}

@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/v_rpg/v_rpg_reference"
+	"$bumpmap" "models/hl1/hd/v_rpg/v_rpg_reference_normal"
+	"$phong" 1
+}

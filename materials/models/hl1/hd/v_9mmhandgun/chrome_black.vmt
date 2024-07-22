@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$envmap" "models/hl1/hd/v_9mmhandgun/chrome_black"
+	"$envmapsphere"			1
+	"$envmapmode" 1
+
+	// requred to see specular on dx6+7 at all
+	"$multipass" 1
+}

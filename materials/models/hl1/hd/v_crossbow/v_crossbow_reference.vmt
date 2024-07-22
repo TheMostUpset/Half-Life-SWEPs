@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/v_crossbow/v_crossbow_Reference"
+	"$bumpmap" "models/hl1/hd/v_crossbow/v_crossbow_Reference_normal"
+	"$phong" "1"
+}

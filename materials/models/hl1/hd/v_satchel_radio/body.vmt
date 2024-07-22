@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/v_satchel_radio/body"
+	"$bumpmap" "models/hl1/hd/v_satchel_radio/body_normal"
+	"$phong" 1
+}

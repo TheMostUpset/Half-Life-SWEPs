@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/v_grenade/grenade s"
+	"$bumpmap" "models/hl1/hd/v_grenade/grenade s_normal"
+	"$phong" 1
+}

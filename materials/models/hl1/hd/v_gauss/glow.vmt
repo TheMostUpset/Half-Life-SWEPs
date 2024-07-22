@@ -1,0 +1,11 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "models/hl1/hd/v_gauss/glow"
+	"Proxies"
+	{
+		"HL1GaussGlow"
+		{
+			"resultVar" "$color2"
+		}
+	}
+}
