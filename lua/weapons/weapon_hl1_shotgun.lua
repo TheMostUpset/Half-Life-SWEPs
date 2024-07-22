@@ -46,7 +46,7 @@ SWEP.ReloadSnds = {Sound("weapons/reload1.wav"), Sound("weapons/reload3.wav")}
 SWEP.AutoReload = false
 
 SWEP.Primary.Sound			= Sound("weapons/sbarrel1.wav")
-SWEP.Primary.SoundHD		= Sound("weapons/hd/sbarrel1.wav")
+SWEP.Primary.SoundHD		= Sound("hl1/weapons/hd/sbarrel1.wav")
 SWEP.Primary.Damage			= 5
 SWEP.Primary.DamageCVar		= "hl1_sk_plr_dmg_buckshot"
 SWEP.Primary.Recoil			= -5
@@ -60,7 +60,7 @@ SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "buckshot"
 
 SWEP.Secondary.Sound		= Sound("weapons/dbarrel1.wav")
-SWEP.Secondary.SoundHD		= Sound("weapons/hd/dbarrel1.wav")
+SWEP.Secondary.SoundHD		= Sound("hl1/weapons/hd/dbarrel1.wav")
 SWEP.Secondary.Recoil		= -10
 SWEP.Secondary.NumShots		= 12
 SWEP.Secondary.Delay		= 1.5
@@ -68,7 +68,7 @@ SWEP.Secondary.Automatic	= true
 SWEP.Secondary.Ammo			= "none"
 
 SWEP.SoundPump				= Sound("weapons/scock1.wav")
-SWEP.SoundPumpHD			= Sound("weapons/hd/scock1.wav")
+SWEP.SoundPumpHD			= Sound("hl1/weapons/hd/scock1.wav")
 
 SWEP.MuzzleScale			= 2.5
 SWEP.MuzzleSmoke			= true

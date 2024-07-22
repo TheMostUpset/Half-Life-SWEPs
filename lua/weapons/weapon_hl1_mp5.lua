@@ -38,9 +38,9 @@ SWEP.PrimarySounds = {
 }
 
 SWEP.PrimarySoundsHD = {
-	Sound("weapons/hd/hks1.wav"),
-	Sound("weapons/hd/hks2.wav"),
-	Sound("weapons/hd/hks3.wav")
+	Sound("hl1/weapons/hd/hks1.wav"),
+	Sound("hl1/weapons/hd/hks2.wav"),
+	Sound("hl1/weapons/hd/hks3.wav")
 }
 
 SWEP.ReloadTime = 1.5
