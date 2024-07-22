@@ -19,6 +19,7 @@ SWEP.Category			= "Half-Life"
 SWEP.Spawnable			= true
 
 SWEP.PlayerModel		= Model("models/hl1/p_gauss.mdl")
+SWEP.PlayerModelHD		= Model("models/hl1/hd/p_gauss.mdl")
 SWEP.EntModel			= Model("models/w_gauss.mdl")
 SWEP.EntModelHD			= Model("models/hl1/hd/w_gauss.mdl")
 

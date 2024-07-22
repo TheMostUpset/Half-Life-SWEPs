@@ -62,8 +62,11 @@ matproxy.Add(
 local function GaussGlowProxy(ent)
 	if !IsValid(ent) then return end
 	local owner = ent:GetOwner()
-	if !IsValid(owner) or !owner:IsPlayer() then return end	
-	local wep = !ent:IsWeapon() and owner:GetActiveWeapon()
+	if !IsValid(owner) or !owner:IsPlayer() then return end
+	local wep = ent
+	if !wep:IsWeapon() then
+		wep = owner:GetActiveWeapon()
+	end
 	if !IsValid(wep) or !wep.GetInAttack then return end
 	
 	local idleCol = render.GetLightColor(ent:GetPos()) * 1.5
