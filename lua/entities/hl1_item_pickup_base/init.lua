@@ -4,6 +4,8 @@ include("shared.lua")
 
 util.AddNetworkString("HL1_HUDPickupMessage")
 
+ENT.RespawnSound = Sound("items/suitchargeok1.wav")
+
 function ENT:KeyValue(k, v)
 	if k == "respawnable" then
 		self.Respawnable = tobool(v)
@@ -50,7 +52,7 @@ function ENT:RespawnThink()
 		self.nextSpawnTime = nil
 		self.Pickable = true
 		self:SetNoDraw(false)
-		self:EmitSound("items/suitchargeok1.wav", 80, 150)
+		self:EmitSound(self.RespawnSound, 80, 150)
 	end
 end
 

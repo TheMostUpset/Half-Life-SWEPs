@@ -19,6 +19,8 @@ local weps = {
 
 SWEP.IsHL1Base			= true
 
+SWEP.RespawnSound		= Sound("items/suitchargeok1.wav")
+
 SWEP.Weight				= -1
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
@@ -573,7 +575,7 @@ function SWEP:Equip(ply)
 			resp:SetAngles(ang)
 			resp.rRespawnable = true
 			resp:Spawn()
-			sound.Play("items/suitchargeok1.wav", pos, 80, 150)
+			sound.Play(resp.RespawnSound, pos, 80, 150)
 		end
 	end)
 end
