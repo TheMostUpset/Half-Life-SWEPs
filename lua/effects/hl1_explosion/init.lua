@@ -7,7 +7,7 @@ function EFFECT:Init(data)
 	self.Norm = data:GetNormal()
 	self.Scale = data:GetScale()
 	
-	if cvar_light:GetBool() then
+	if !cvar_light or cvar_light:GetBool() then
 		local dynlight = DynamicLight(self:EntIndex())
 		dynlight.Pos = data:GetOrigin()
 		dynlight.Size = 6 * self.Scale
