@@ -29,13 +29,8 @@ function ENT:Explode(exppos, expnorm)
 	exppos = exppos or self:GetPos()
 	expnorm = expnorm or Vector()
 
-	local tr = util.TraceLine({
-		start = self:GetPos(), 
-		endpos = exppos - expnorm * 2,
-		filter = self
-	})
 	-- TODO: fix displacements
-	util.Decal("Scorch", tr.HitPos - tr.HitNormal, tr.HitPos)
+	util.Decal("Scorch", exppos - expnorm, exppos + expnorm)
 
 	self:InsertSound(1, self:GetPos(), 1024, 3, NULL)
 	
