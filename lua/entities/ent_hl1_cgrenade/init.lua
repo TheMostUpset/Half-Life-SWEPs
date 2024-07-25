@@ -4,13 +4,11 @@ include("shared.lua")
 ENT.Model = Model("models/grenade.mdl")
 
 function ENT:Initialize()
-	local size = 1
-	local mins, maxs = Vector(-size, -size, -size), Vector(size, size, size)
 	self:SetMoveType(MOVETYPE_FLYGRAVITY)
 	self:SetMoveCollide(MOVECOLLIDE_FLY_BOUNCE)
 	self:SetSolid(SOLID_BBOX)
 	self:SetModel(self.Model)
-	self:SetCollisionBounds(mins, maxs)
+	self:SetCollisionBounds(Vector(), Vector())
 	
 	self:SetCorrectGravity()
 
@@ -72,10 +70,10 @@ function ENT:StartTouch(ent)
 	local tr = self:GetTouchTrace()
 	local pos, norm = tr.HitPos, tr.HitNormal
 	if self:IsCreature(ent) then
-		self:Explode(self:GetPos() - norm)
 		self:ExplosionEffects(self:GetPos() + Vector(0,0,15))
+		self:Explode(self:GetPos() - norm)
 	else
-		self:Explode(pos, norm)
 		self:ExplosionEffects(pos, norm)
+		self:Explode(pos, norm)
 	end
 end
