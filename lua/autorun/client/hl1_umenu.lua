@@ -143,3 +143,5 @@ local function HL1_PopulateToolMenu()
 end
 
 hook.Add("PopulateToolMenu", "HL1_PopulateToolMenu", HL1_PopulateToolMenu)
+
+list.Set("ContentCategoryIcons", "Half-Life", "hl1_16.png")
