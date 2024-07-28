@@ -9,9 +9,10 @@ function EFFECT:GetMuzzleFlashPos(Position, Ent, Attachment)
 	
 	local ply = LocalPlayer()
 	local specply = ply:GetObserverTarget()
+	local owner = Ent:GetOwner()
 
 	-- Shoot from the viewmodel
-	if Ent:IsCarriedByLocalPlayer() and !ply:ShouldDrawLocalPlayer() or ply:GetObserverMode() == OBS_MODE_IN_EYE and IsValid(specply) and Ent:GetOwner() == specply then
+	if Ent:IsCarriedByLocalPlayer() and !ply:ShouldDrawLocalPlayer() or ply:GetObserverMode() == OBS_MODE_IN_EYE and IsValid(specply) and owner == specply then
 	
 		local ViewModel = ply:GetViewModel()
 		
@@ -27,7 +28,6 @@ function EFFECT:GetMuzzleFlashPos(Position, Ent, Attachment)
 	-- Shoot from the world model
 	else
 	
-		local owner = Ent:GetOwner()
 		if IsValid(owner) and (ply:IsLineOfSightClear(owner) or owner == ply) then
 			local att = Ent:GetAttachment(Attachment)
 			if att then
