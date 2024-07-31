@@ -8,8 +8,8 @@ ENT.SndHitBody	= {Sound("weapons/xbow_hitbod1.wav"), Sound("weapons/xbow_hitbod2
 
 function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_FLY)
-	self:SetMoveCollide(MOVECOLLIDE_COUNT)
-	self:SetSolid(SOLID_NONE)
+	self:SetMoveCollide(MOVECOLLIDE_FLY_CUSTOM)
+	self:SetSolid(SOLID_BBOX)
 	self:SetModel(self.Model)
 	self:SetCollisionBounds(Vector(), Vector())
 	if IsValid(self.Owner) and !self.Owner:IsPlayer() then
@@ -17,32 +17,14 @@ function ENT:Initialize()
 		self:SetMoveCollide(MOVECOLLIDE_FLY_BOUNCE)
 		return
 	end
-	self:NextThink(CurTime())
-	
-	if !game.SinglePlayer() then
-		local entFilter = self:TraceFilter()
-		local tr = util.TraceLine({
-			start = self:GetPos() - self:GetForward() * 12,
-			endpos = self:GetPos() + self:GetForward() * 64,
-			filter = entFilter
-		})
-		if !self.didHit and tr.Hit and IsValid(tr.Entity) then
-			self:BoltTouch(tr)
-		end
-	end
-	
-	self.HitCheckDist = math.Clamp(2000 * FrameTime() - 18, 12, 96)
-	self.HitCheckDist = math.ceil(self.HitCheckDist)
 end
 
-function ENT:StartTouch(ent)
-	if self.Owner:IsPlayer() then return end
-	self:BoltTouch(self:GetTouchTrace())
+function ENT:Touch(ent)
+	self:BoltTouch(ent, self:GetTouchTrace())
 end
 
-function ENT:BoltTouch(tr)
-	local pOther = tr.Entity
-	if !pOther:IsSolid() then return end
+function ENT:BoltTouch(pOther, tr)
+	if !pOther:IsSolid() or self.didHit then return end
 	self.didHit = true
 	if pOther:Health() > 0 then
 		local pevOwner = self:GetOwner()
@@ -109,22 +91,6 @@ function ENT:BoltTouch(tr)
 	if self:IsMultiplayerRules() then
 		self:Explode(tr)
 	end
-end
-
-function ENT:Think()
-	if !self.HitCheckDist or self.didHit then return end
-	local entFilter = self:TraceFilter()
-	local tr = util.TraceLine({
-		start = self:GetPos() - self:GetForward() * 12,
-		endpos = self:GetPos() + self:GetForward() * self.HitCheckDist,
-		filter = entFilter
-	})
-	if !self.didHit and tr.Hit then
-		self:BoltTouch(tr)
-	end
-
-	self:NextThink(CurTime())
-	return true
 end
 
 function ENT:Explode(tr)

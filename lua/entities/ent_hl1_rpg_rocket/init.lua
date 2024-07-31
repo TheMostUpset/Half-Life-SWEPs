@@ -8,7 +8,6 @@ ENT.Trail			= "hl1/sprites/smoke.vmt"
 ENT.TrailLifeTime	= 4
 ENT.Sprite			= "sprites/animglow01.vmt"
 ENT.FlySound		= "Missile.Ignite"
-ENT.TouchHitbox		= false -- experimental, set true to mimic HL1 behaviour that also detects NPC hitboxes
 
 function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_FLYGRAVITY)
@@ -28,21 +27,6 @@ function ENT:Initialize()
 	
 	self.dmg = cvars.Number("hl1_sk_plr_dmg_rpg", 100)
 	self.radius = self.dmg * 2.5
-	
-	if self.TouchHitbox then
-		self.HitCheckDist = math.Clamp(2000 * FrameTime() - 18, 12, 96)
-		self.HitCheckDist = math.ceil(self.HitCheckDist)
-		
-		local entFilter = self:TraceFilter()
-		local tr = util.TraceLine({
-			start = self:GetPos() - self:GetForward() * 4,
-			endpos = self:GetPos() + self:GetForward() * 8,
-			filter = entFilter
-		})
-		if !self.didHit and tr.Hit and IsValid(tr.Entity) and self:IsNPC() or self:IsNextBot() then
-			self:Touch(tr.Entity)
-		end
-	end
 end
 
 function ENT:Touch(pOther)
@@ -73,9 +57,6 @@ function ENT:Explode(ent)
 
 	local owner = IsValid(self.Owner) and self.Owner or self
 	local dmgPos = tr.HitPos
-	if self.TouchHitbox and self:IsCreature(ent) then -- ugly hack to force full damage on hit entity
-		dmgPos = ent:WorldSpaceCenter()
-	end
 	local dmg = DamageInfo()
 	dmg:SetInflictor(self)
 	dmg:SetAttacker(owner)
@@ -169,23 +150,9 @@ function ENT:Think()
 		if self:WaterLevel() == 0 && self:GetVelocity():Length() < 1500 then
 			self:Explode()
 		end
-	end
-	
-	if self.TouchHitbox and self.HitCheckDist then
-		local entFilter = self:TraceFilter()
-		local tr = util.TraceLine({
-			start = self:GetPos() - self:GetForward() * 12,
-			endpos = self:GetPos() + self:GetForward() * self.HitCheckDist,
-			filter = entFilter
-		})
-		if !self.didHit and tr.Hit and IsValid(tr.Entity) and self:IsCreature(tr.Entity) then
-			self:Touch(tr.Entity)
-		end
-		self:NextThink(CurTime())		
-	else
-		self:NextThink(CurTime() + .1)
-	end
-	
+	end	
+
+	self:NextThink(CurTime() + .1)	
 	return true
 end
 
