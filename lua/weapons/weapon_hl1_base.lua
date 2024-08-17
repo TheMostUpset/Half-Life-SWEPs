@@ -49,7 +49,6 @@ if SERVER then
 		CreateConVar(v[1], v[2], FCVAR_NOTIFY)
 	end
 	CreateConVar("hl1_sv_itemrespawntime", 23, FCVAR_NOTIFY, "Respawn time for items in Deathmatch", 0)
-	CreateConVar("hl1_sv_mprules", 0, FCVAR_NOTIFY, "Deathmatch rules in singleplayer", 0, 1)
 	local cvar_loadout = CreateConVar("hl1_sv_loadout", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Players spawn with HL weapons (1 - crowbar & pistol, 2 - full loadout)", 0, 2)
 	CreateConVar("hl1_sv_gauss_tracebackwards", 1, FCVAR_NOTIFY, "", 0, 1)
 	CreateConVar("hl1_sv_explosionshake", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Enable screen shake after explosions", 0, 1)
@@ -222,6 +221,7 @@ cvars.AddChangeCallback("hl1_sv_cmodels", function(name, value_old, value_new)
 end)
 
 local cvar_clampammo = CreateConVar("hl1_sv_clampammo", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Enable max ammo limit for HL weapons", 0, 1)
+local cvar_mprules = CreateConVar("hl1_sv_mprules", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Deathmatch rules in singleplayer", 0, 1)
 -- local cvar_sprules = CreateConVar("hl1_sv_sprules", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Singleplayer rules in multiplayer", 0, 1)
 local cvar_unlimitedclip = CreateConVar("hl1_sv_unlimitedclip", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Unlimited clip for HL weapons", 0, 1)
 local cvar_unlimitedammo = CreateConVar("hl1_sv_unlimitedammo", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Unlimited ammo for HL weapons", 0, 1)
@@ -655,7 +655,15 @@ function SWEP:SetNextAttack(t)
 end
 
 function SWEP:IsMultiplayerRules()
-	return (!game.SinglePlayer() or cvars.Bool("hl1_sv_mprules")) and !(GAMEMODE.Cooperative and !cvars.Bool("hl1_sv_mprules"))
+	return (!game.SinglePlayer() or cvar_mprules:GetBool()) and !(GAMEMODE.Cooperative and !cvar_mprules:GetBool())
+end
+
+function SWEP:IsUnlimitedAmmo()
+	return cvar_unlimitedammo:GetBool()
+end
+
+function SWEP:IsUnlimitedClip()
+	return cvar_unlimitedclip:GetBool()
 end
 
 function SWEP:PlayEmptySound()
@@ -672,7 +680,7 @@ end
 
 function SWEP:rgAmmo()
 	if !IsValid(self.Owner) then return -1 end
-	if cvar_unlimitedammo:GetBool() or self.Owner:IsNPC() then
+	if self:IsUnlimitedAmmo() or self.Owner:IsNPC() then
 		return 99
 	else
 		return self:Ammo1()
@@ -694,11 +702,11 @@ function SWEP:TakeClipPrimary(num)
 	end
 
 	if self.Primary.ClipSize > -1 then
-		if !cvar_unlimitedclip:GetBool() then
+		if !self:IsUnlimitedClip() then
 			self:TakePrimaryAmmo(num)
 		end
 	else
-		if !cvar_unlimitedammo:GetBool() then
+		if !self:IsUnlimitedAmmo() then
 			self:TakePrimaryAmmo(num)
 		end
 	end
@@ -706,7 +714,7 @@ end
 
 function SWEP:TakeClipSecondary(num)
 	num = num or 1
-	if cvar_unlimitedammo:GetBool() then return end
+	if self:IsUnlimitedAmmo() then return end
 	self:TakeSecondaryAmmo(num)
 end
 
@@ -920,7 +928,7 @@ function SWEP:ShootBullet(damage, num_bullets, aimcone)
 	bullet.Src 		= self.Owner:GetShootPos()
 	bullet.Dir 		= dir
 	bullet.Spread 	= aimcone
-	bullet.Tracer	= 3
+	bullet.Tracer	= self.Primary.BulletTracer or 3
 	bullet.Force	= self.Primary.BulletForce or 4
 	bullet.Damage	= damage
 	bullet.AmmoType = self.Primary.Ammo
@@ -1065,7 +1073,7 @@ function SWEP:Think()
 		if reload <= CurTime() then
 			self:SetReloadTime(0)
 			self:ReloadPreEnd()
-			if self.UnlimitedAmmo or cvar_unlimitedammo:GetBool() then
+			if self.UnlimitedAmmo or self:IsUnlimitedAmmo() then
 				self:SetClip1(self.Primary.ClipSize)
 			else
 				local clip = self:Clip1()
