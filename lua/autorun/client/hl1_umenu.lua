@@ -57,13 +57,8 @@ local function HL1_SettingsPanel(DForm)
 	DForm:CheckBox("Enable c_ models", "hl1_sv_cmodels")
 	DForm:ControlHelp("requires weapon re-equip to apply")
 	DForm:CheckBox("Enable HD models", "hl1_sv_hdmodels")
-	if game.SinglePlayer() then
-		DForm:CheckBox("Multiplayer rules in singleplayer", "hl1_sv_mprules")
-		DForm:ControlHelp("e.g. gauss jumping, colt zoom, explosive bolts")
-	else
-		-- DForm:CheckBox("Singleplayer rules in multiplayer", "hl1_sv_sprules")
-		-- DForm:ControlHelp("no gauss jumping, no colt zoom, normal bolts")
-	end
+	DForm:CheckBox("Multiplayer rules", "hl1_sv_mprules")
+	DForm:ControlHelp("e.g. gauss jumping, colt zoom, explosive bolts")
 	DForm:CheckBox("Gauss trace backwards", "hl1_sv_gauss_tracebackwards")
 	DForm:ControlHelp("tired of killing yourself? disable this!")
 	DForm:CheckBox("Glock extra bullet", "hl1_sv_glock_extrabullet")

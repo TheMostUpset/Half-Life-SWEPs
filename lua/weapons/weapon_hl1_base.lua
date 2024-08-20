@@ -221,10 +221,17 @@ cvars.AddChangeCallback("hl1_sv_cmodels", function(name, value_old, value_new)
 end)
 
 local cvar_clampammo = CreateConVar("hl1_sv_clampammo", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Enable max ammo limit for HL weapons", 0, 1)
-local cvar_mprules = CreateConVar("hl1_sv_mprules", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Deathmatch rules in singleplayer", 0, 1)
--- local cvar_sprules = CreateConVar("hl1_sv_sprules", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Singleplayer rules in multiplayer", 0, 1)
+local cvar_mprules = CreateConVar("hl1_sv_mprules", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle deathmatch rules", 0, 1)
 local cvar_unlimitedclip = CreateConVar("hl1_sv_unlimitedclip", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Unlimited clip for HL weapons", 0, 1)
 local cvar_unlimitedammo = CreateConVar("hl1_sv_unlimitedammo", 0, {FCVAR_NOTIFY, FCVAR_REPLICATED}, "Unlimited ammo for HL weapons", 0, 1)
+
+if SERVER then
+	if game.SinglePlayer() then
+		cvar_mprules:SetBool(false)
+	elseif !GAMEMODE.Cooperative then
+		cvar_mprules:SetBool(true)
+	end
+end
 
 SWEP.HoldType			= "shotgun"
 
@@ -655,7 +662,7 @@ function SWEP:SetNextAttack(t)
 end
 
 function SWEP:IsMultiplayerRules()
-	return (!game.SinglePlayer() or cvar_mprules:GetBool()) and !(GAMEMODE.Cooperative and !cvar_mprules:GetBool())
+	return cvar_mprules:GetBool()
 end
 
 function SWEP:IsUnlimitedAmmo()

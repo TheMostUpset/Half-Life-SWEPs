@@ -3,7 +3,7 @@ ENT.PrintName		= "HL1 Ent Base"
 ENT.Author			= "Upset"
 
 function ENT:IsMultiplayerRules()
-	return (!game.SinglePlayer() or cvars.Bool("hl1_sv_mprules")) and !(GAMEMODE.Cooperative and !cvars.Bool("hl1_sv_mprules"))
+	return cvars.Bool("hl1_sv_mprules")
 end
 
 function ENT:IsScreenShakeEnabled()
